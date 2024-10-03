@@ -7,14 +7,36 @@ import javax.persistence.*
 data class Users(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    @Column(name = "user_id")
+    val id: Long,
 
-    @Column(nullable = false)
+    @Column(name = "user_name", nullable = false)
     var username: String,
 
-    @Column(nullable = false)
+    @Column(name = "user_email", nullable = false)
     var email: String,
 
-    @Column(nullable = false)
-    var password: String
+    @Column(name = "user_password", nullable = false)
+    var password: String,
+
+    @Column(name = "user_major")
+    var major: String,
+
+    @Column(name = "user_student_id")
+    var studentId: String,
+
+    @Column(name = "user_phone_number")
+    var phoneNumber: String,
+
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    var meetings: List<User_Meeting> = mutableListOf()
+
+    @Column(name = "user_attendence_score")
+    var attendence_score: Int,
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_profile_file_id")
+    var profile: File? = null,
+
+    var features: List<String>
 )
