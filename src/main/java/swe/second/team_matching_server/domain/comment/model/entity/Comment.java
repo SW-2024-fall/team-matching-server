@@ -14,6 +14,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
@@ -31,8 +33,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "comments")
-@ToString(callSuper = true, exclude = {"parentComment", "childComments"})
-@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true, of = {"id", "user", "meeting", "history", "content", "parentComment", "childComments"})
+@EqualsAndHashCode(callSuper = true, of = {"id"})
 @Getter
 @Builder
 @AllArgsConstructor
@@ -66,7 +68,7 @@ public class Comment extends Base{
     @JoinColumn(name = "parent_comment_id", nullable = true)
     private Comment parentComment;
 
-    @OneToMany(mappedBy = "parentComment")
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Comment> childComments = new ArrayList<>();
 

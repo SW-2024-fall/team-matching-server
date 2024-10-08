@@ -5,6 +5,8 @@ import swe.second.team_matching_server.domain.user.model.entity.UserMeeting;
 import swe.second.team_matching_server.domain.history.model.entity.History;
 import swe.second.team_matching_server.domain.category.model.entity.CategoryMeeting;
 
+import org.hibernate.annotations.Filter;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -14,12 +16,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,10 +38,12 @@ import swe.second.team_matching_server.domain.file.model.entity.File;
 @Entity
 @Table(name = "meetings")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true, of = "id")
+@Filter(name = "deletedMeetingFilter", condition = "deleted_at is null")
 public class Meeting extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,7 +94,7 @@ public class Meeting extends Base {
     private int views = 0;
 
     @JoinColumn(nullable = false, name = "thumbnail_ids")
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<File> thumbnailFiles;
 
     @Column(nullable = true)
@@ -101,13 +108,13 @@ public class Meeting extends Base {
     @Column(nullable = true)
     private String analyzedIntroduction;
 
-    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<History> histories;
 
-    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserMeeting> users;
 
-    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CategoryMeeting> categories;
 
     public void updateThumbnailFiles(List<File> thumbnailFiles) {

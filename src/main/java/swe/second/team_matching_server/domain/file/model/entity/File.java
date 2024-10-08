@@ -11,17 +11,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
+
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
+import org.hibernate.annotations.Filter;
 @Entity
 @Table(name = "files")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(callSuper = true, of = {"id", "originalName", "folderName", "size", "mimeType", "meta"})
+@Filter(name = "deletedFileFilter", condition = "deleted_at is null")
 public class File extends Base {
   @Id
   private String id;

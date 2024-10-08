@@ -6,7 +6,6 @@ import lombok.Getter;
 
 
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
-import swe.second.team_matching_server.common.entity.Base;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -15,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.UniqueConstraint;
+
 @Entity
 @Table(name = "user_likes", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "meeting_id"})
@@ -22,7 +22,7 @@ import jakarta.persistence.UniqueConstraint;
 @Getter
 @AllArgsConstructor
 @Builder
-public class UserLike extends Base {
+public class UserLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

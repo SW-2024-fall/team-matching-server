@@ -1,6 +1,7 @@
 package swe.second.team_matching_server.domain.user.model.entity;
 
-import lombok.Getter;
+import swe.second.team_matching_server.common.entity.Base;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
@@ -13,22 +14,34 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.UniqueConstraint;
+import lombok.Getter;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
+
+import org.hibernate.annotations.Filter;
+
+
 import java.util.ArrayList;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
 
 @Getter
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = {"email", "student_id"}))
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+@ToString(callSuper = true, exclude = {"password", "meetings", "profileImage"})
+@EqualsAndHashCode(callSuper = true)
+@Filter(name = "deletedUserFilter", condition = "deleted_at is null")
+public class User extends Base{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -61,7 +74,7 @@ public class User {
     @Builder.Default
     private List<String> features = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<UserMeeting> meetings = new ArrayList<>();
 

@@ -20,6 +20,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.Filter;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -28,6 +30,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_meeting", uniqueConstraints = {
   @UniqueConstraint(name="user_meeting_unique", columnNames = {"user_id", "meeting_id"})
 })
+@Filter(name = "deletedUserMeetingFilter", condition = "deleted_at is null")
 public class UserMeeting extends Base {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
