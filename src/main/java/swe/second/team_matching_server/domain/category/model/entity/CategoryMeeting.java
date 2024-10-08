@@ -11,11 +11,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 @Entity
-@Table(name = "category_meetings")
+@Table(name = "category_meetings", uniqueConstraints = @UniqueConstraint(columnNames = {"category_id", "meeting_id"}))
 @Getter
 @AllArgsConstructor
 @Builder
