@@ -1,5 +1,10 @@
 package swe.second.team_matching_server.domain.history.model.entity;
 
+import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
+import swe.second.team_matching_server.domain.file.model.entity.File;
+import swe.second.team_matching_server.common.entity.Base;
+import swe.second.team_matching_server.domain.user.model.entity.User;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +43,11 @@ public class History extends Base{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id", nullable = false)
     private Meeting meeting;
 
@@ -47,6 +56,10 @@ public class History extends Base{
 
     @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isPublic = true;
 
     @OneToMany(mappedBy = "history", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
