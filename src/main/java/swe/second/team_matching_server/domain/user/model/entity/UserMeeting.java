@@ -2,7 +2,7 @@ package swe.second.team_matching_server.domain.user.model.entity;
 
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
-import swe.second.team_matching_server.domain.user.model.enums.Role;
+import swe.second.team_matching_server.domain.user.model.enums.UserMeetingRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -46,9 +46,9 @@ public class UserMeeting extends Base {
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  private Role role;
+  private UserMeetingRole role;
 
-  public void updateRole(Role role) {
+  public void updateRole(UserMeetingRole role) {
     this.role = role;
   }
 }

@@ -12,12 +12,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.PreUpdate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,10 +55,10 @@ public class Meeting extends Base {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
 
     @Column(nullable = true)
@@ -187,4 +189,21 @@ public class Meeting extends Base {
         this.name = name;
     }
 
+    public void updateCategories(List<MeetingCategory> categories) {
+        this.categories = categories;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void isValid() {
+        if (this.startDate.isAfter(this.endDate)) {
+            throw new IllegalArgumentException("Start date must be before end date");
+        }
+        if (this.min_participants > this.max_participants) {
+            throw new IllegalArgumentException("Min participants must be less than max participants");
+        }
+        if (this.min_participants < 2 || this.max_participants > 99) {
+            throw new IllegalArgumentException("Min participants must be more than 1 and max participants must be less than 100");
+        }
+    }
 }
