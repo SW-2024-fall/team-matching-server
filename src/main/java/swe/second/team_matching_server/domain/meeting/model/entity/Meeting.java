@@ -3,7 +3,8 @@ package swe.second.team_matching_server.domain.meeting.model.entity;
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.user.model.entity.UserMeeting;
 import swe.second.team_matching_server.domain.history.model.entity.History;
-import swe.second.team_matching_server.domain.category.model.entity.CategoryMeeting;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 
 import org.hibernate.annotations.Filter;
 
@@ -86,12 +87,19 @@ public class Meeting extends Base {
     @Builder.Default
     private boolean isRecurring = true;
     
+    @Column(nullable = false)
+    private MeetingType type;
+
     @Column(nullable = true)
     private String meta;
 
     @Column(nullable = false)
     @Builder.Default
     private int views = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private List<MeetingCategory> categories = new ArrayList<>();
 
     @JoinColumn(nullable = false, name = "thumbnail_ids")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -113,9 +121,6 @@ public class Meeting extends Base {
 
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserMeeting> users;
-
-    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CategoryMeeting> categories;
 
     public void updateThumbnailFiles(List<File> thumbnailFiles) {
         this.thumbnailFiles = thumbnailFiles;
