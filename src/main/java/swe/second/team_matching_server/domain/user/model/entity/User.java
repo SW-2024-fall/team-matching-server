@@ -65,7 +65,7 @@ public class User extends Base{
 
     @Column(nullable = false)
     @Builder.Default
-    private byte attendenceScore = 80;
+    private byte attendanceScore = 80;
 
     @JoinColumn(name = "profile_image_id", nullable = false)
     @OneToOne(fetch = FetchType.LAZY)
@@ -79,8 +79,8 @@ public class User extends Base{
     @Builder.Default
     private List<MeetingMember> meetings = new ArrayList<>();
 
-    public void updateAttendenceScore(byte attendenceScore) {
-        this.attendenceScore = attendenceScore;
+    public void updateattendanceScore(byte attendanceScore) {
+        this.attendanceScore = attendanceScore;
     }
 
     public void updateProfileImage(File profileImage) {
