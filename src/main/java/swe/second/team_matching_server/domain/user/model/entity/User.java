@@ -30,6 +30,7 @@ import org.hibernate.annotations.Filter;
 
 import java.util.ArrayList;
 import swe.second.team_matching_server.domain.file.model.entity.File;
+import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
 
 @Getter
@@ -76,7 +77,7 @@ public class User extends Base{
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
-    private List<UserMeeting> meetings = new ArrayList<>();
+    private List<MeetingMember> meetings = new ArrayList<>();
 
     public void updateAttendenceScore(byte attendenceScore) {
         this.attendenceScore = attendenceScore;

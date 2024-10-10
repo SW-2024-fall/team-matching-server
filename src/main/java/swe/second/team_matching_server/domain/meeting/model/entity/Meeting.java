@@ -1,7 +1,6 @@
 package swe.second.team_matching_server.domain.meeting.model.entity;
 
 import swe.second.team_matching_server.common.entity.Base;
-import swe.second.team_matching_server.domain.user.model.entity.UserMeeting;
 import swe.second.team_matching_server.domain.history.model.entity.History;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
@@ -122,7 +121,7 @@ public class Meeting extends Base {
     private List<History> histories;
 
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserMeeting> users;
+    private List<MeetingMember> memebers;
 
     public void updateThumbnailFiles(List<File> thumbnailFiles) {
         this.thumbnailFiles = thumbnailFiles;

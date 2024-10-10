@@ -1,8 +1,8 @@
-package swe.second.team_matching_server.domain.user.model.entity;
+package swe.second.team_matching_server.domain.meeting.model.entity;
 
 import swe.second.team_matching_server.common.entity.Base;
-import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
-import swe.second.team_matching_server.domain.user.model.enums.UserMeetingRole;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberRole;
+import swe.second.team_matching_server.domain.user.model.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -27,11 +27,11 @@ import org.hibernate.annotations.Filter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user_meeting", uniqueConstraints = {
-  @UniqueConstraint(name="user_meeting_unique", columnNames = {"user_id", "meeting_id"})
+@Table(name = "meeting_member", uniqueConstraints = {
+  @UniqueConstraint(name="meeting_member_unique", columnNames = {"user_id", "meeting_id"})
 })
-@Filter(name = "deletedUserMeetingFilter", condition = "deleted_at is null")
-public class UserMeeting extends Base {
+@Filter(name = "deletedMeetingMemberFilter", condition = "deleted_at is null")
+public class MeetingMember extends Base {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -46,9 +46,9 @@ public class UserMeeting extends Base {
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  private UserMeetingRole role;
+  private MeetingMemberRole role;
 
-  public void updateRole(UserMeetingRole role) {
+  public void updateRole(MeetingMemberRole role) {
     this.role = role;
   }
 }

@@ -1,6 +1,6 @@
-package swe.second.team_matching_server.domain.user.model.enums;
+package swe.second.team_matching_server.domain.meeting.model.enums;
 
-public enum UserMeetingRole {
+public enum MeetingMemberRole {
   LEADER("리더"),
   CO_LEADER("부리더"),
   MEMBER("멤버"),
@@ -9,7 +9,7 @@ public enum UserMeetingRole {
 
   private final String role;
 
-  UserMeetingRole(String role) {
+  MeetingMemberRole(String role) {
     this.role = role;
   }
 
