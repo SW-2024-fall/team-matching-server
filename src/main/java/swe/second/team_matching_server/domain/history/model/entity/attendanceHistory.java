@@ -2,7 +2,7 @@ package swe.second.team_matching_server.domain.history.model.entity;
 
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.user.model.entity.User;
-import swe.second.team_matching_server.domain.history.model.enums.AttendenceState;
+import swe.second.team_matching_server.domain.history.model.enums.AttendanceState;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -22,11 +22,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "attendence_history")
+@Table(name = "attendance_history")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AttendenceHistory {
+public class AttendanceHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,5 +50,5 @@ public class AttendenceHistory {
     private byte awarded_score;
     
     @Column(nullable = false)
-    private AttendenceState state;
+    private AttendanceState state;
 }
