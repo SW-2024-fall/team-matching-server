@@ -2,21 +2,28 @@ package swe.second.team_matching_server.domain.file.model.entity;
 
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.common.enums.FileFolder;
-
+import swe.second.team_matching_server.domain.user.model.entity.User;
+import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
+import swe.second.team_matching_server.domain.history.model.entity.History;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-
 import org.hibernate.annotations.Filter;
+
+
 @Entity
 @Table(name = "files")
 @Getter
@@ -47,4 +54,16 @@ public class File extends Base {
 
   @Column(nullable = false)
   private String url;
+
+  @ManyToOne
+  @JoinColumn(name = "meeting_id", nullable = true)
+  private Meeting meeting;
+
+  @OneToOne
+  @JoinColumn(name = "user_id", nullable = true)
+  private User user;
+
+  @ManyToOne
+  @JoinColumn(name = "history_id", nullable = true)
+  private History history;
 }
