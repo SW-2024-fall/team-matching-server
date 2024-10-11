@@ -9,7 +9,6 @@ import org.hibernate.annotations.Filter;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.GenerationType;
@@ -102,8 +101,7 @@ public class Meeting extends Base {
     @Builder.Default
     private List<MeetingCategory> categories = new ArrayList<>();
 
-    @JoinColumn(nullable = false, name = "thumbnail_ids")
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<File> thumbnailFiles;
 
     @Column(nullable = true)
