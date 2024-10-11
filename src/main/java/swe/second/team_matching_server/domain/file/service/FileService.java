@@ -44,7 +44,7 @@ public class FileService {
   public File saveFile(FileCreateDto fileCreateDto) {
     String fileId = UUID.randomUUID().toString();
     String filePath = fileCreateDto.getFolder().getFolderName() + '/' + fileId;
-
+    
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentType(fileCreateDto.getFile().getContentType());
     metadata.setContentLength(fileCreateDto.getFile().getSize());
@@ -56,9 +56,8 @@ public class FileService {
     }
 
     String url = amazonS3.getUrl(bucket, filePath).toString();
-    fileCreateDto.setUrl(url);
 
-    File file = fileMapper.toEntity(fileCreateDto);
+    File file = fileMapper.toEntity(fileCreateDto, fileId, url);
     return fileRepository.save(file);
   }
 

@@ -14,8 +14,6 @@ public class FileCreateDto {
   @NonNull
   private MultipartFile file;
 
-  private String id;
   private String meta;
   private FileFolder folder;
-  private String url;
 }
