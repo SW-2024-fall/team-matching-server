@@ -1,7 +1,7 @@
 package swe.second.team_matching_server.common.enums;
 
 public enum FileFolder {
-  DEFAULT("default"),
+  DEFAULT("team-matching"),
   MEETING("meeting"),
   USER("user"),
   FILE("file"),
@@ -14,6 +14,9 @@ public enum FileFolder {
   }
 
   public String getFolderName() {
-    return folderName;
+    if (this == DEFAULT) {
+      return DEFAULT.folderName;
+    }
+    return DEFAULT.folderName + "/" + this.folderName;
   }
 }
