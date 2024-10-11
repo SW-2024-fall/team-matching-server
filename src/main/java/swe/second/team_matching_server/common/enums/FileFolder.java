@@ -14,6 +14,9 @@ public enum FileFolder {
   }
 
   public String getFolderName() {
+    if (this == DEFAULT) {
+      return DEFAULT.folderName;
+    }
     return DEFAULT.folderName + "/" + this.folderName;
   }
 }
