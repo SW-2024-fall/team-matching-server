@@ -23,7 +23,7 @@ import org.hibernate.annotations.Filter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(callSuper = true, of = {"id", "originalName", "folderName", "size", "mimeType", "meta"})
+@ToString(callSuper = true, of = {"id", "originalName", "folder", "size", "mimeType", "meta"})
 @Filter(name = "deletedFileFilter", condition = "deleted_at is null")
 public class File extends Base {
   @Id
@@ -34,11 +34,8 @@ public class File extends Base {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private FileFolder folderName;
-
-  @Column(nullable = false)
-  private String fileName;
-
+  private FileFolder folder;
+  
   @Column(nullable = false)
   private String mimeType;
 
