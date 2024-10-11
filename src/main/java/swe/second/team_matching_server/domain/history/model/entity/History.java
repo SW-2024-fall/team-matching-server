@@ -62,8 +62,7 @@ public class History extends Base{
     @Builder.Default
     private List<AttendanceHistory> attendanceHistories = new ArrayList();
 
-    @JoinColumn(name = "history_files")
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "history", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<File> photos = new ArrayList();
 
