@@ -60,6 +60,14 @@ public class FileFacadeService {
     return fileMapper.toDto(file);
   }
 
+  public List<FileResponse> saveFiles(List<FileCreateDto> fileCreateDtos) {
+    List<File> files = fileService.saveFiles(fileCreateDtos);
+
+    return files.stream()
+        .map(fileMapper::toDto)
+        .collect(Collectors.toList());
+  }
+
   // 명시적으로 fileId로 파일을 찾는 경우 없으면 에러 발생
   public FileResponse findById(String fileId) {
     File file = fileService.findFileById(fileId);
