@@ -1,6 +1,6 @@
-package swe.second.team_matching_server.domain.history.dto;
+package swe.second.team_matching_server.domain.history.model.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +16,8 @@ public class HistoryCreateDto {
     private String title;
     private String content;
     private boolean isPublic;
-    private LocalDate date;
+    private LocalDateTime date;
     private byte awardedScore;
+    private String location;
     private List<MemberAttendanceState> attendance;
 }

@@ -1,4 +1,4 @@
-package swe.second.team_matching_server.domain.history.dto;
+package swe.second.team_matching_server.domain.history.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;

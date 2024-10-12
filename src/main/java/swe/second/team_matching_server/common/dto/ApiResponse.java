@@ -1,18 +1,18 @@
 package swe.second.team_matching_server.common.dto;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import swe.second.team_matching_server.common.enums.ResultCode;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.util.List;
+import swe.second.team_matching_server.common.enums.ResultCode;
 
 @Getter
 @ToString
-public class ApiResponse<T> {
+public class    ApiResponse<T> {
     private final ResultCode code;
     private final String message;
     private final T data;

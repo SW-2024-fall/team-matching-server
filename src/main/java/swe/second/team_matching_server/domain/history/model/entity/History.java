@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
-
+import swe.second.team_matching_server.domain.user.model.entity.User;
 
 @Entity
 @Getter
@@ -59,7 +59,6 @@ public class History extends Base{
     @OneToMany(mappedBy = "history", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<AttendanceHistory> attendanceHistories = new ArrayList();
-    private List<AttendanceHistory> attendanceHistories = new ArrayList();
 
     @OneToMany(mappedBy = "history", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
@@ -70,4 +69,12 @@ public class History extends Base{
 
     @Column(nullable = false)
     private String location;
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = 
+    }
 }
