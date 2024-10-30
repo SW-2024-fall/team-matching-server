@@ -4,6 +4,8 @@ import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.history.model.entity.History;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
+import swe.second.team_matching_server.domain.file.model.entity.File;
+import swe.second.team_matching_server.domain.meeting.model.exception.MeetingInvalidParticipantException;
 
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.BatchSize;
@@ -11,7 +13,6 @@ import org.hibernate.annotations.BatchSize;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -76,10 +77,10 @@ public class Meeting extends Base {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private byte min_participants;
+    private byte minParticipant;
 
     @Column(nullable = false)
-    private byte max_participants;
+    private byte maxParticipant;
 
     @Column(nullable = false)
     private LocalTime startTime;
@@ -121,7 +122,17 @@ public class Meeting extends Base {
 
     @BatchSize(size = 10)
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MeetingMember> memebers;
+    @Builder.Default
+    private List<MeetingMember> members = new ArrayList<>();
+
+    @Transient
+    private int currentParticipant;
+
+    @Transient
+    private int likeCount;
+
+    @Transient
+    private int commentCount;
 
     public void updateThumbnailFiles(List<File> thumbnailFiles) {
         this.thumbnailFiles = thumbnailFiles;
@@ -138,9 +149,9 @@ public class Meeting extends Base {
     public void updateAnalyzedIntroduction(String analyzedIntroduction) {
         this.analyzedIntroduction = analyzedIntroduction;
     }
-    
-    public void updateStatus(boolean isRecurring) {
-        this.isRecurring = isRecurring;
+
+    public void updateDays(Set<DayOfWeek> days) {
+        this.days = days;
     }
 
     public void updateDate(LocalDate startDate, LocalDate endDate) {
@@ -157,23 +168,19 @@ public class Meeting extends Base {
         this.location = location;
     }
 
-    public void updateParticipants(byte min_participants, byte max_participants) {
-        if (min_participants > max_participants) {
-            throw new IllegalArgumentException("Min participants must be less than max participants");
+    public void updateParticipants(byte minParticipant, byte maxParticipant) {
+        if (minParticipant > maxParticipant) {
+            throw new MeetingInvalidParticipantException();
         }
-        if (min_participants < 2 || max_participants > 99) {
-            throw new IllegalArgumentException("Min participants must be more than 1 and max participants must be less than 100");
+        if (minParticipant < 2 || maxParticipant > 99) {
+            throw new MeetingInvalidParticipantException();
         }
-        this.min_participants = min_participants;
-        this.max_participants = max_participants;
+        this.minParticipant = minParticipant;
+        this.maxParticipant = maxParticipant;
     }
 
     public void updateMeta(String meta) {
         this.meta = meta;
-    }
-
-    public void updateViews() {
-        this.views += 1;
     }
 
     public void updateTitle(String title) {
@@ -192,17 +199,15 @@ public class Meeting extends Base {
         this.categories = categories;
     }
 
-    @PrePersist
-    @PreUpdate
-    private void isValid() {
-        if (this.startDate.isAfter(this.endDate)) {
-            throw new IllegalArgumentException("Start date must be before end date");
-        }
-        if (this.min_participants > this.max_participants) {
-            throw new IllegalArgumentException("Min participants must be less than max participants");
-        }
-        if (this.min_participants < 2 || this.max_participants > 99) {
-            throw new IllegalArgumentException("Min participants must be more than 1 and max participants must be less than 100");
-        }
+    public void setCurrentParticipant(int currentParticipant) {
+        this.currentParticipant = currentParticipant;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
     }
 }
