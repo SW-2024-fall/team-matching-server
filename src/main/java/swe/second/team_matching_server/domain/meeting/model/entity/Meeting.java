@@ -6,6 +6,7 @@ import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.BatchSize;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,7 +18,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,15 +29,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 
-import swe.second.team_matching_server.domain.file.model.entity.File;
 
 @Entity
 @Table(name = "meetings")
@@ -60,7 +62,9 @@ public class Meeting extends Base {
     private String content;
 
     @Column(nullable = true)
-    private Set<DayOfWeek> days;
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Set<DayOfWeek> days = new HashSet<>();
 
     @Column(nullable = false)
     private String location;
@@ -84,25 +88,21 @@ public class Meeting extends Base {
     private LocalTime endTime;
 
     @Column(nullable = false)
-    @Builder.Default
-    private boolean isRecurring = true;
-    
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MeetingType type;
 
     @Column(nullable = true)
     private String meta;
 
     @Column(nullable = false)
-    @Builder.Default
-    private int views = 0;
-
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private List<MeetingCategory> categories = new ArrayList<>();
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<File> thumbnailFiles;
+    @Builder.Default
+    private List<File> thumbnailFiles = new ArrayList<>();
 
     @Column(nullable = true)
     @Builder.Default
@@ -116,8 +116,10 @@ public class Meeting extends Base {
     private String analyzedIntroduction;
 
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<History> histories;
+    @Builder.Default
+    private List<History> histories = new ArrayList<>();
 
+    @BatchSize(size = 10)
     @OneToMany(mappedBy = "meeting", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MeetingMember> memebers;
 
