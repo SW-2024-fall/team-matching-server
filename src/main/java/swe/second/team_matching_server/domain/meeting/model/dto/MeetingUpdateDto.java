@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 
 import java.util.ArrayList;
@@ -21,10 +20,9 @@ import java.time.DayOfWeek;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MeetingCreateDto {
+public class MeetingUpdateDto {
     private String name;
     private String title;
-    private MeetingType type;
     @Builder.Default
     private List<MeetingCategory> categories = new ArrayList<>();
     @Builder.Default
@@ -35,7 +33,6 @@ public class MeetingCreateDto {
     private int maxParticipant;
     private String content;
     private String location;
-    private LocalDate startDate;
     private LocalDate endDate;
     private LocalTime startTime;
     private LocalTime endTime;

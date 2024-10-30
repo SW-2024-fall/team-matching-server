@@ -1,6 +1,7 @@
 package swe.second.team_matching_server.domain.meeting.model.dto;
 
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,7 +29,7 @@ public class MeetingInfo {
     private int minParticipant;
     private int maxParticipant;
     private String meta;
-    private boolean isRecruiting;
+    private List<MeetingCategory> categories;
     private List<String> features;
     private List<String> analyzedFeatures;
     private String analyzedIntroduction;
