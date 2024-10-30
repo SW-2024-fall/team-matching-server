@@ -1,7 +1,5 @@
 package swe.second.team_matching_server.domain.meeting.model.dto;
 
-import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,7 +13,6 @@ import lombok.AllArgsConstructor;
 public class MeetingElement {
     private Long id;
     private String name;
-    private MeetingType type;
     private List<String> features;
     private String preview;
     private int maxParticipant;

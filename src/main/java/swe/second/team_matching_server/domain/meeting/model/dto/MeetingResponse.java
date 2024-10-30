@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class MeetingResponse {
     private Long id;
-    private MeetingMemberRole role;
+    private MeetingMemberRole userRole;
     private MeetingInfo info;
     private MeetingMembers members;
 }
