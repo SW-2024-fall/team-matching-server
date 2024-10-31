@@ -81,7 +81,7 @@ public class MeetingMapper {
             .build();
     }
 
-    private MeetingMembers toMeetingMembers(List<MeetingMember> members) {
+    public MeetingMembers toMeetingMembers(List<MeetingMember> members) {
         return MeetingMembers.builder()
             .member(members.stream()
                 .filter(m -> m.getRole() != MeetingMemberRole.REQUESTED
@@ -106,7 +106,5 @@ public class MeetingMapper {
             .phoneNumber(member.getUser().getPhoneNumber())
             .role(member.getRole())
             .build();
-    }
-
-    
+    }    
 }

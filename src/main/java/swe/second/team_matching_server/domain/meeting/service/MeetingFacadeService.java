@@ -18,11 +18,12 @@ import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
-import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
+import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMembers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MeetingFacadeService {
@@ -86,5 +87,12 @@ public class MeetingFacadeService {
 
   public void delete(Long meetingId, String userId) {
     meetingService.delete(meetingId, userId);
+  }
+
+  public MeetingMembers getMembersByMeetingId(Long meetingId) {
+    meetingService.isExistOrThrow(meetingId);
+
+    List<MeetingMember> members = meetingMemberService.findAllByMeetingId(meetingId);
+    return meetingMapper.toMeetingMembers(members);
   }
 }
