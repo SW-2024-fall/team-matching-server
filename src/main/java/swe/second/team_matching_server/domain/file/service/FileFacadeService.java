@@ -8,7 +8,6 @@ import swe.second.team_matching_server.domain.file.model.mapper.FileMapper;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
