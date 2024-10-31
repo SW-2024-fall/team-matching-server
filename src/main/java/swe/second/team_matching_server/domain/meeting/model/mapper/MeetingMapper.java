@@ -34,6 +34,7 @@ public class MeetingMapper {
             .startTime(meetingCreateDto.getStartTime())
             .endTime(meetingCreateDto.getEndTime())
             .meta(meetingCreateDto.getMeta())
+            .applicationMethod(meetingCreateDto.getApplicationMethod())
             .build();
     }
 
@@ -78,6 +79,7 @@ public class MeetingMapper {
             .startTime(meeting.getStartTime())
             .endTime(meeting.getEndTime())
             .meta(meeting.getMeta())
+            .applicationMethod(meeting.getApplicationMethod())
             .build();
     }
 
