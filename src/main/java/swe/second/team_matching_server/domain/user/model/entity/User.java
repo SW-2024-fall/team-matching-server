@@ -18,12 +18,22 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.JoinColumn;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.EqualsAndHashCode;
+
+import org.hibernate.annotations.Filter;
+
+import java.util.List;
+import java.util.ArrayList;
+
+
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
@@ -65,7 +75,9 @@ public class User extends Base{
     @Builder.Default
     private byte attendanceScore = 80;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    // service에서 저장 시 기본 이미지 저장 필요
+    @OneToOne
+    @JoinColumn(name = "profile_image_id", nullable = false)
     private File profileImage;
 
     @Column(nullable = false)
