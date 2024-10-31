@@ -20,16 +20,16 @@ public class FileUserService {
     this.fileService = fileService;
   }
 
-  public Optional<File> findFileByUserId(String userId) {
-    return fileRepository.findByUserId(userId);
+  public File findByUserId(String userId) {
+    return fileRepository.findByUserId(userId).orElseThrow(FileNotFoundException::new);
   }
 
   @Transactional
   public File updateFileByUserId(String userId, FileCreateDto fileCreateDto) {
-    Optional<File> file = findFileByUserId(userId);
+    File file = findByUserId(userId);
 
-    if (file.isPresent()) {
-      fileService.deleteFile(file.get().getId());
+    if (file.getUser() != null) {
+      fileService.delete(file);
     }
     fileCreateDto.setFolder(FileFolder.USER);
 
