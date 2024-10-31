@@ -24,4 +24,29 @@ public class MeetingMemberController {
         return ApiResponse.success(meetingFacadeService.getMembersByMeetingId(meetingId));
     }
 
+    @PostMapping("/application")
+    public ApiResponse<Void> application(@PathVariable Long meetingId) {
+        // TODO: 로그인 구현 후 수정
+        String userId = "test2";
+
+        meetingFacadeService.application(meetingId, userId);
+        return ApiResponse.success();
+    }
+
+    @DeleteMapping("/application")
+    public ApiResponse<Void> cancelApplication(@PathVariable Long meetingId) {
+        // TODO: 로그인 구현 후 수정
+        String userId = "test2";
+
+        meetingFacadeService.cancelApplication(meetingId, userId);
+        return ApiResponse.success();
+    }
+
+    // @GetMapping("/my-role")
+    // public ApiResponse<MeetingMemberRole> getMyRole(@PathVariable Long meetingId) {
+    //     // TODO: 로그인 구현 후 수정
+    //     String userId = "test";
+
+    //     return ApiResponse.success(meetingFacadeService.getRoleByMeetingIdAndUserId(meetingId, userId));
+    // }
 }
