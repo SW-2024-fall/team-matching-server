@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NonNull;
 
 import swe.second.team_matching_server.common.enums.FileFolder;
+import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
+import swe.second.team_matching_server.domain.user.model.entity.User;
+import swe.second.team_matching_server.domain.history.model.entity.History;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,4 +19,8 @@ public class FileCreateDto {
 
   private String meta;
   private FileFolder folder;
+
+  private Meeting meeting;
+  private User user;
+  private History history;
 }
