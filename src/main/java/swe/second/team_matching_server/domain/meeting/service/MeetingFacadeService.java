@@ -60,9 +60,17 @@ public class MeetingFacadeService {
   public MeetingResponse findById(Long meetingId, String userId) {
     Meeting meeting = meetingService.findByIdWithThumbnailFiles(meetingId);
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(meetingId);
+    MeetingMemberRole userRole = meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId);
+
+    if (userRole != MeetingMemberRole.LEADER && userRole != MeetingMemberRole.CO_LEADER) {
+      members = members.stream()
+        .filter(member -> member.getRole() != MeetingMemberRole.REQUESTED)
+        .collect(Collectors.toList());
+    }
 
     MeetingResponse meetingResponse = meetingMapper.toResponse(meeting, members);
-    meetingResponse.setUserRole(meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId));
+    meetingResponse.setUserRole(userRole);
+
     return meetingResponse;
   }
 
