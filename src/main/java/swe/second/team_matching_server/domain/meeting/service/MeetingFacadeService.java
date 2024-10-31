@@ -115,4 +115,20 @@ public class MeetingFacadeService {
 
     meetingMemberService.cancelApplication(meeting, userId);
   }
+
+  public MeetingMemberRole getRoleByMeetingIdAndUserId(Long meetingId, String userId) {
+    return meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId);
+  }
+
+  public MeetingMembers updateRole(String userId, Long meetingId, String targetUserId, MeetingMemberRole role) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    return meetingMapper.toMeetingMembers(meetingMemberService.updateRole(userId, meeting, targetUserId, role));
+  }
+
+  public MeetingMembers leave(Long meetingId, String userId, String targetUserId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    return meetingMapper.toMeetingMembers(meetingMemberService.leave(meeting, userId, targetUserId));
+  }
 }
