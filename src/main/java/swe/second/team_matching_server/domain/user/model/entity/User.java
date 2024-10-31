@@ -60,6 +60,8 @@ public class User extends Base{
     private String studentId;
 
     @Column(nullable = false)
+    private String phoneNumber;
+    @Column(nullable = false)
     @Builder.Default
     private byte attendanceScore = 80;
 
