@@ -17,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class MeetingMemberService {
     private final MeetingMemberRepository meetingMemberRepository;
@@ -91,7 +94,9 @@ public class MeetingMemberService {
 
         try {
             meetingMember = findByMeetingIdAndUserId(meeting.getId(), user.getId());
-            meetingMember.updateRole(role);
+            if (meetingMember.getRole() != MeetingMemberRole.LEADER) {
+                meetingMember.updateRole(role);
+            }
         } catch (MeetingMemberNotFoundException e) {
             meetingMember = MeetingMember.builder()
                 .meeting(meeting)
@@ -113,12 +118,14 @@ public class MeetingMemberService {
         return create(meeting, userId, MeetingMemberRole.LEADER);
     }
 
+    @Transactional
     public void application(Meeting meeting, String userId) {
         User user = userService.findById(userId);
 
         create(meeting, user, MeetingMemberRole.REQUESTED);
     }
 
+    @Transactional
     public void cancelApplication(Meeting meeting, String userId) {
         User user = userService.findById(userId);
         MeetingMember meetingMember = findByMeetingIdAndUserId(meeting.getId(), user.getId());
@@ -141,4 +148,42 @@ public class MeetingMemberService {
         meetingMemberRepository.delete(meetingMember);
     }
 
+    @Transactional
+    public List<MeetingMember> updateRole(String executorId, Long meetingId, String userId, MeetingMemberRole role) {
+        if (!isExecutive(meetingId, executorId)) {
+            throw new MeetingNoPermissionException();
+        }
+        MeetingMember meetingMember = findByMeetingIdAndUserId(meetingId, userId);
+        meetingMember.updateRole(role);
+        
+        return findAllByMeetingId(meetingId);
+    }
+
+    public List<MeetingMember> upgradeCoLeader(String executorId, Long meetingId, String memberId) {
+        if (!isMember(meetingId, executorId)) {
+            throw new MeetingMemberNotFoundException();
+        }
+        return updateRole(executorId, meetingId, memberId, MeetingMemberRole.CO_LEADER);
+    }
+
+    public List<MeetingMember> downgradeMember(String executorId, Long meetingId, String memberId) {
+        if (!isMember(meetingId, executorId)) {
+            throw new MeetingMemberNotFoundException();
+        }
+        return updateRole(executorId, meetingId, memberId, MeetingMemberRole.MEMBER);
+    }
+
+    public List<MeetingMember> applicationAccept(String executorId, Long meetingId, String memberId) {
+        if (!isRequested(meetingId, memberId)) {
+            throw new MeetingRequestNotFoundException();
+        }
+        return updateRole(executorId, meetingId, memberId, MeetingMemberRole.MEMBER);
+    }
+
+    public List<MeetingMember> applicationReject(String executorId, Long meetingId, String memberId) {
+        if (!isRequested(meetingId, memberId)) {
+            throw new MeetingRequestNotFoundException();
+        }
+        return updateRole(executorId, meetingId, memberId, MeetingMemberRole.EXTERNAL);
+    }
 }
