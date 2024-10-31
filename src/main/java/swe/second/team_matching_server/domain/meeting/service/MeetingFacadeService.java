@@ -103,4 +103,16 @@ public class MeetingFacadeService {
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(meetingId);
     return meetingMapper.toMeetingMembers(members);
   }
+
+  public void application(Long meetingId, String userId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    meetingMemberService.application(meeting, userId);
+  }
+
+  public void cancelApplication(Long meetingId, String userId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    meetingMemberService.cancelApplication(meeting, userId);
+  }
 }
