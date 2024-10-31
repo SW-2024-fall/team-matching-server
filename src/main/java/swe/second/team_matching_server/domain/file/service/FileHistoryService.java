@@ -31,8 +31,8 @@ public class FileHistoryService {
         .map(fileCreateDto -> {fileCreateDto.setFolder(FileFolder.HISTORY); return fileCreateDto;})
         .collect(Collectors.toList());
     
-    fileService.saveFiles(updatedFileCreateDtos);
-    fileService.deleteFiles(deletedFileIds);
+    fileService.saveAll(updatedFileCreateDtos);
+    fileService.deleteAll(deletedFileIds);
 
     return findFilesByHistoryId(historyId);
   }
