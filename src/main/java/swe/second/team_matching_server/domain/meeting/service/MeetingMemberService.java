@@ -10,6 +10,9 @@ import swe.second.team_matching_server.domain.meeting.model.exception.MeetingNoP
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingMemberNotFoundException;
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingRequestNotFoundException;
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingLeaderLeaveException;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberApplicationMethod;
+import swe.second.team_matching_server.domain.meeting.model.exception.MeetingFullException;
+import swe.second.team_matching_server.domain.meeting.model.exception.MeetingInvalidParticipantException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,7 +125,11 @@ public class MeetingMemberService {
     public void application(Meeting meeting, String userId) {
         User user = userService.findById(userId);
 
-        create(meeting, user, MeetingMemberRole.REQUESTED);
+        if (meeting.getApplicationMethod() == MeetingMemberApplicationMethod.LEADER_ACCEPT) {
+            create(meeting, user, MeetingMemberRole.MEMBER);
+        } else {
+            create(meeting, user, MeetingMemberRole.REQUESTED);
+        }
     }
 
     @Transactional
@@ -137,53 +144,70 @@ public class MeetingMemberService {
     }
 
     @Transactional
-    public void leave(Meeting meeting, String userId) {
-        User user = userService.findById(userId);
-        MeetingMember meetingMember = findByMeetingIdAndUserId(meeting.getId(), user.getId());
+    public List<MeetingMember> leave(Meeting meeting, String userId, String targetUserId) {
+        MeetingMember requestedMember = findByMeetingIdAndUserId(meeting.getId(), userId);
+        MeetingMember targetMember = findByMeetingIdAndUserId(meeting.getId(), targetUserId);
 
-        if (meetingMember.getRole() == MeetingMemberRole.LEADER) {
+        if (targetMember.getRole() == MeetingMemberRole.LEADER) {
             throw new MeetingLeaderLeaveException();
         }
+        if (!requestedMember.equals(targetMember) && 
+            (requestedMember.getRole() != MeetingMemberRole.LEADER || 
+            requestedMember.getRole() != MeetingMemberRole.CO_LEADER)) {
+            throw new MeetingNoPermissionException();
+        }
+        if (countMembersByMeetingId(meeting.getId()) <= meeting.getMinParticipant()) {
+            throw new MeetingInvalidParticipantException();
+        }
+        meetingMemberRepository.delete(targetMember);
 
-        meetingMemberRepository.delete(meetingMember);
+        return findAllByMeetingId(meeting.getId());
     }
 
     @Transactional
-    public List<MeetingMember> updateRole(String executorId, Long meetingId, String userId, MeetingMemberRole role) {
-        if (!isExecutive(meetingId, executorId)) {
+    public List<MeetingMember> updateRole(String executorId, Meeting meeting, String userId, MeetingMemberRole role) {
+        if (!isExecutive(meeting.getId(), executorId)) {
             throw new MeetingNoPermissionException();
         }
-        MeetingMember meetingMember = findByMeetingIdAndUserId(meetingId, userId);
-        meetingMember.updateRole(role);
+        if (role == MeetingMemberRole.MEMBER && countMembersByMeetingId(meeting.getId()) >= meeting.getMaxParticipant()) {
+            throw new MeetingFullException();
+        }
+        MeetingMember meetingMember = findByMeetingIdAndUserId(meeting.getId(), userId);
         
-        return findAllByMeetingId(meetingId);
+        if (role == MeetingMemberRole.EXTERNAL) {
+            meetingMemberRepository.delete(meetingMember);
+        } else {
+            meetingMember.updateRole(role);
+        }
+
+        return findAllByMeetingId(meeting.getId());
     }
 
-    public List<MeetingMember> upgradeCoLeader(String executorId, Long meetingId, String memberId) {
-        if (!isMember(meetingId, executorId)) {
+    public List<MeetingMember> upgradeCoLeader(String executorId, Meeting meeting, String memberId) {
+        if (!isMember(meeting.getId(), executorId)) {
             throw new MeetingMemberNotFoundException();
         }
-        return updateRole(executorId, meetingId, memberId, MeetingMemberRole.CO_LEADER);
+        return updateRole(executorId, meeting, memberId, MeetingMemberRole.CO_LEADER);
     }
 
-    public List<MeetingMember> downgradeMember(String executorId, Long meetingId, String memberId) {
-        if (!isMember(meetingId, executorId)) {
+    public List<MeetingMember> downgradeMember(String executorId, Meeting meeting, String memberId) {
+        if (!isMember(meeting.getId(), executorId)) {
             throw new MeetingMemberNotFoundException();
         }
-        return updateRole(executorId, meetingId, memberId, MeetingMemberRole.MEMBER);
+        return updateRole(executorId, meeting, memberId, MeetingMemberRole.MEMBER);
     }
 
-    public List<MeetingMember> applicationAccept(String executorId, Long meetingId, String memberId) {
-        if (!isRequested(meetingId, memberId)) {
+    public List<MeetingMember> applicationAccept(String executorId, Meeting meeting, String memberId) {
+        if (!isRequested(meeting.getId(), memberId)) {
             throw new MeetingRequestNotFoundException();
         }
-        return updateRole(executorId, meetingId, memberId, MeetingMemberRole.MEMBER);
+        return updateRole(executorId, meeting, memberId, MeetingMemberRole.MEMBER);
     }
 
-    public List<MeetingMember> applicationReject(String executorId, Long meetingId, String memberId) {
-        if (!isRequested(meetingId, memberId)) {
+    public List<MeetingMember> applicationReject(String executorId, Meeting meeting, String memberId) {
+        if (!isRequested(meeting.getId(), memberId)) {
             throw new MeetingRequestNotFoundException();
         }
-        return updateRole(executorId, meetingId, memberId, MeetingMemberRole.EXTERNAL);
+        return updateRole(executorId, meeting, memberId, MeetingMemberRole.EXTERNAL);
     }
 }
