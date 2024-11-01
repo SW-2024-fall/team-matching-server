@@ -5,14 +5,18 @@ import swe.second.team_matching_server.common.dto.ApiResponse;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMembers;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMemberUpdateDto;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberRole;
-import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMemberDto;
+import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMemberTargetDto;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import lombok.extern.slf4j.Slf4j;
 @RestController
+@Slf4j
 @RequestMapping("/api/meetings/{meetingId}/members")
 public class MeetingMemberController {
     private final MeetingFacadeService meetingFacadeService;
@@ -44,10 +48,55 @@ public class MeetingMemberController {
         return ApiResponse.success();
     }
 
+    @PutMapping("application/accept")
+    public ApiResponse<MeetingMembers> acceptApplication(@PathVariable Long meetingId, @RequestBody MeetingMemberTargetDto targetDto) {
+        // TODO: 로그인 구현 후 수정
+        String userId = "test";
+
+        MeetingMembers meetingMembers = meetingFacadeService.acceptApplication(meetingId, userId, targetDto.getTargetUserId());
+        return ApiResponse.success(meetingMembers);
+    }
+
+    @PutMapping("/application/reject")
+    public ApiResponse<MeetingMembers> rejectApplication(@PathVariable Long meetingId, @RequestBody MeetingMemberUpdateDto dto) {
+        // TODO: 로그인 구현 후 수정
+        String userId = "test";
+
+        MeetingMembers meetingMembers = meetingFacadeService.rejectApplication(meetingId, userId, dto.getTargetUserId());
+        return ApiResponse.success(meetingMembers);
+    }
+
+    @PutMapping("/upgrade")
+    public ApiResponse<MeetingMembers> upgradeToCoLeader(@PathVariable Long meetingId, @RequestBody MeetingMemberUpdateDto dto) {
+        // TODO: 로그인 구현 후 수정
+        String userId = "test";
+
+        MeetingMembers meetingMembers = meetingFacadeService.upgradeToCoLeader(meetingId, userId, dto.getTargetUserId());
+        return ApiResponse.success(meetingMembers);
+    }
+
+    @PutMapping("/downgrade")
+    public ApiResponse<MeetingMembers> downgradeToMember(@PathVariable Long meetingId, @RequestBody MeetingMemberUpdateDto dto) {
+        // TODO: 로그인 구현 후 수정
+        String userId = "test";
+
+        MeetingMembers meetingMembers = meetingFacadeService.downgradeToMember(meetingId, userId, dto.getTargetUserId());
+        return ApiResponse.success(meetingMembers);
+    }
+
+    @PutMapping("/leave")
+    public ApiResponse<MeetingMembers> leave(@PathVariable Long meetingId, @RequestBody MeetingMemberUpdateDto dto) {
+        // TODO: 로그인 구현 후 수정
+        String userId = "test";
+
+        MeetingMembers meetingMembers = meetingFacadeService.leave(meetingId, userId, dto.getTargetUserId());
+        return ApiResponse.success(meetingMembers);
+    }
+
     @GetMapping("/my-role")
     public ApiResponse<MeetingMemberRole> getMyRole(@PathVariable Long meetingId) {
         // TODO: 로그인 구현 후 수정
-        String userId = "test";
+        String userId = "test2";
 
         return ApiResponse.success(meetingFacadeService.getRoleByMeetingIdAndUserId(meetingId, userId));
     }
@@ -62,13 +111,10 @@ public class MeetingMemberController {
     }
 
     @DeleteMapping
-    public ApiResponse<MeetingMembers> leave(@PathVariable Long meetingId, @RequestBody(required = false) MeetingMemberDto dto) {
+    public ApiResponse<MeetingMembers> leave(@PathVariable Long meetingId) {
         // TODO: 로그인 구현 후 수정. 본인에 대한 것만 가능
         String userId = "test2";
 
-        if (dto == null) {
-            return ApiResponse.success(meetingFacadeService.leave(meetingId, userId, userId));
-        }
-        return ApiResponse.success(meetingFacadeService.leave(meetingId, userId, dto.getUserId()));
+        return ApiResponse.success(meetingFacadeService.leave(meetingId, userId, userId));
     }
 }
