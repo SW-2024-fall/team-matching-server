@@ -14,8 +14,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.JoinColumn;
@@ -26,13 +26,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.EqualsAndHashCode;
-
-import org.hibernate.annotations.Filter;
-
-import java.util.List;
-import java.util.ArrayList;
-
 
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.file.model.entity.File;
@@ -71,6 +64,7 @@ public class User extends Base{
 
     @Column(nullable = false)
     private String phoneNumber;
+
     @Column(nullable = false)
     @Builder.Default
     private byte attendanceScore = 80;
