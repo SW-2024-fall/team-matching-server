@@ -126,9 +126,33 @@ public class MeetingFacadeService {
     return meetingMapper.toMeetingMembers(meetingMemberService.updateRole(userId, meeting, targetUserId, role));
   }
 
+  public MeetingMembers acceptApplication(Long meetingId, String userId, String targetUserId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    return meetingMapper.toMeetingMembers(meetingMemberService.acceptApplication(userId, meeting, targetUserId));
+  }
+
+  public MeetingMembers rejectApplication(Long meetingId, String userId, String targetUserId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    return meetingMapper.toMeetingMembers(meetingMemberService.rejectApplication(userId, meeting, targetUserId));
+  }
+
   public MeetingMembers leave(Long meetingId, String userId, String targetUserId) {
     Meeting meeting = meetingService.findById(meetingId);
 
     return meetingMapper.toMeetingMembers(meetingMemberService.leave(meeting, userId, targetUserId));
+  }
+
+  public MeetingMembers upgradeToCoLeader(Long meetingId, String userId, String targetUserId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    return meetingMapper.toMeetingMembers(meetingMemberService.upgradeToCoLeader(userId, meeting, targetUserId));
+  }
+
+  public MeetingMembers downgradeToMember(Long meetingId, String userId, String targetUserId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    return meetingMapper.toMeetingMembers(meetingMemberService.downgradeToMember(userId, meeting, targetUserId));
   }
 }
