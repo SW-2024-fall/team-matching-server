@@ -1,5 +1,7 @@
 package swe.second.team_matching_server.domain.meeting.model.enums;
 
+import swe.second.team_matching_server.domain.meeting.model.exception.MeetingInvalidCategoryException;  
+
 public enum MeetingCategory {
   RESEARCH("학술/연구"),
   LITERATURE("인문학/책/글"),
@@ -20,6 +22,14 @@ public enum MeetingCategory {
   MeetingCategory(String category) {
     this.category = category;
   }
+
+  public static MeetingCategory from(String value) {
+    try {
+        return MeetingCategory.valueOf(value);
+    } catch (IllegalArgumentException e) {
+        throw new MeetingInvalidCategoryException();
+    }
+}
 
   public String getCategory() {
     return category;
