@@ -1,0 +1,4 @@
+google:
+  cloud:
+    project-id: swe2024fall
+    location: us-central1
