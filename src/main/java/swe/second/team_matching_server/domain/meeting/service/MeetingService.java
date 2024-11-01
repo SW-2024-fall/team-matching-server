@@ -62,6 +62,13 @@ public class MeetingService {
         return meetings;
     }
 
+    public boolean isExistOrThrow(Long meetingId) {
+        if (!meetingRepository.existsById(meetingId)) {
+            throw new MeetingNotFoundException();
+        }
+        return true;
+    }
+
     public Meeting findById(Long meetingId) {
         return meetingRepository.findById(meetingId)
             .orElseThrow(() -> new MeetingNotFoundException());

@@ -34,6 +34,7 @@ public class MeetingMapper {
             .startTime(meetingCreateDto.getStartTime())
             .endTime(meetingCreateDto.getEndTime())
             .meta(meetingCreateDto.getMeta())
+            .applicationMethod(meetingCreateDto.getApplicationMethod())
             .build();
     }
 
@@ -78,10 +79,11 @@ public class MeetingMapper {
             .startTime(meeting.getStartTime())
             .endTime(meeting.getEndTime())
             .meta(meeting.getMeta())
+            .applicationMethod(meeting.getApplicationMethod())
             .build();
     }
 
-    private MeetingMembers toMeetingMembers(List<MeetingMember> members) {
+    public MeetingMembers toMeetingMembers(List<MeetingMember> members) {
         return MeetingMembers.builder()
             .member(members.stream()
                 .filter(m -> m.getRole() != MeetingMemberRole.REQUESTED
@@ -106,7 +108,5 @@ public class MeetingMapper {
             .phoneNumber(member.getUser().getPhoneNumber())
             .role(member.getRole())
             .build();
-    }
-
-    
+    }    
 }

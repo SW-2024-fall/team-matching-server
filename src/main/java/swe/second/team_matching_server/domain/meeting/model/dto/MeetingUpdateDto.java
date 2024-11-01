@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
-
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberApplicationMethod;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,4 +37,5 @@ public class MeetingUpdateDto {
     private LocalTime startTime;
     private LocalTime endTime;
     private String meta;
+    private MeetingMemberApplicationMethod applicationMethod;
 }
