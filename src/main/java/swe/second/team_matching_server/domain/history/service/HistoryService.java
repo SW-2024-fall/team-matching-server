@@ -62,6 +62,17 @@ public class HistoryService {
         this.attendanceHistoryService = attendanceHistoryService;
     }
 
+    public Page<HistoryElement> findAllByUserId(Pageable pageable, String userId) {
+        int attendanceCount = attendanceHistoryService.countAllByUserId(userId);
+        List<AttendanceHistory> attendanceHistories = attendanceHistoryService.findAllByUserId(pageable,userId).getData();
+
+        List<HistoryElement> histories = historyRepository.findAllByHistoryIds(attendanceHistories.stream()
+            .map(attendanceHistory -> historyMapper.toHistoryElement(attendanceHistory.getHistory()))
+            .collect(Collectors.toList()));
+
+        return new PageImpl<>(histories, pageable, attendanceCount);
+    }
+
     public HistoryResponse findById(Long historyId, String userId) {
         List<AttendanceHistory> attendanceHistories = attendanceHistoryService.findAllByHistoryId(historyId);
         History history = historyRepository.findById(historyId)
