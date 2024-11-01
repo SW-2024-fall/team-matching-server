@@ -30,7 +30,13 @@ public enum ResultCode {
 
   // file
   FILE_NOT_FOUND("해당 파일이 존재하지 않습니다."),
-  FILE_MAX_COUNT_EXCEEDED("파일은 최대 5개까지 업로드 가능합니다.");
+  FILE_MAX_COUNT_EXCEEDED("파일은 최대 5개까지 업로드 가능합니다."),
+
+
+  // history
+  HISTORY_NO_ACCESS("해당 히스토리에 접근할 권한이 없습니다."),
+  HISTORY_NO_PERMISSION("히스토리 생성 및 수정/삭제는 리더 및 부리더만 가능합니다."),
+  HISTORY_NOT_FOUND("해당 히스토리가 존재하지 않습니다.");
 
   private final String message;
 
