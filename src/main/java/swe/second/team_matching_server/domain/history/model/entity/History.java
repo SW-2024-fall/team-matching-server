@@ -26,10 +26,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import swe.second.team_matching_server.common.entity.Base;
-import swe.second.team_matching_server.domain.file.model.entity.File;
-import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
-
 
 @Entity
 @Getter
@@ -74,4 +70,32 @@ public class History extends Base{
 
     @Column(nullable = false)
     private String location;
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public void updateDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public void updateLocation(String location) {
+        this.location = location;
+    }
+
+    public void updatePhotos(List<File> photos) {
+        this.photos = photos;
+    }
+
+    public void updateAttendanceHistories(List<AttendanceHistory> attendanceHistories) {
+        this.attendanceHistories = attendanceHistories;
+    }
 }
