@@ -49,8 +49,8 @@ public class MeetingMemberService {
             .orElse(MeetingMemberRole.EXTERNAL);
     }
 
-    public List<User> findUsersByMeetingId(Long meetingId) {
-        return meetingMemberRepository.findUsersByMeetingId(meetingId);
+    public List<User> findMemberUsersByMeetingId(Long meetingId) {
+        return meetingMemberRepository.findMemberUsersByMeetingId(meetingId);
     }
 
     public List<Meeting> findMeetingsByUserId(String userId) {
