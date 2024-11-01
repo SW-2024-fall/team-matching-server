@@ -16,5 +16,5 @@ public interface FileMapper {
   @Mapping(target = "mimeType", expression = "java(fileCreateDto.getFile().getContentType())")
   File toEntity(FileCreateDto fileCreateDto, String id, String url);
 
-  FileResponse toDto(File file);
+  FileResponse toFileResponse(File file);
 }
