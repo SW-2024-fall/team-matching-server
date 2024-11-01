@@ -1,6 +1,7 @@
 package swe.second.team_matching_server.domain.comment.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import swe.second.team_matching_server.domain.comment.model.entity.Comment;
@@ -17,5 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
   
   List<Comment> findAllByParentCommentId(Long parentCommentId);
 
-  Comment findByChildCommentId(Long childCommentId);
+  @Query("SELECT c.parentComment FROM Comment c WHERE c.id = :childCommentId")
+  Comment findParentCommentByChildCommentId(Long childCommentId);
 }
