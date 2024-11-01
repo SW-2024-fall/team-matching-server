@@ -23,6 +23,7 @@ public enum ResultCode {
   MEETING_INVALID_MEETING_TYPE("유효하지 않은 모임 유형입니다."),
   MEETING_INVALID_MEETING_MEMBER_ROLE("유효하지 않은 모임 멤버 권한입니다."),
   MEETING_INVALID_DAYS("반복 모임은 최소 하루 이상 반복되어야 합니다."),
+  MEETING_LEADER_LEAVE("리더는 탈퇴할 수 없습니다."),
 
   // user
   USER_NOT_FOUND("해당 유저가 존재하지 않습니다."),

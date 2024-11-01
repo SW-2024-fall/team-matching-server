@@ -5,6 +5,7 @@ import swe.second.team_matching_server.domain.history.model.entity.History;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 import swe.second.team_matching_server.domain.file.model.entity.File;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberApplicationMethod;
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingInvalidParticipantException;
 
 import org.hibernate.annotations.Filter;
@@ -91,6 +92,11 @@ public class Meeting extends Base {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MeetingType type;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private MeetingMemberApplicationMethod applicationMethod = MeetingMemberApplicationMethod.LEADER_ACCEPT;
 
     @Column(nullable = true)
     private String meta;

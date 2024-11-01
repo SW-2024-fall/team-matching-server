@@ -18,11 +18,12 @@ import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
-import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
+import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMembers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MeetingFacadeService {
@@ -59,9 +60,17 @@ public class MeetingFacadeService {
   public MeetingResponse findById(Long meetingId, String userId) {
     Meeting meeting = meetingService.findByIdWithThumbnailFiles(meetingId);
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(meetingId);
+    MeetingMemberRole userRole = meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId);
+
+    if (userRole != MeetingMemberRole.LEADER && userRole != MeetingMemberRole.CO_LEADER) {
+      members = members.stream()
+        .filter(member -> member.getRole() != MeetingMemberRole.REQUESTED)
+        .collect(Collectors.toList());
+    }
 
     MeetingResponse meetingResponse = meetingMapper.toResponse(meeting, members);
-    meetingResponse.setUserRole(meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId));
+    meetingResponse.setUserRole(userRole);
+
     return meetingResponse;
   }
 
@@ -86,5 +95,40 @@ public class MeetingFacadeService {
 
   public void delete(Long meetingId, String userId) {
     meetingService.delete(meetingId, userId);
+  }
+
+  public MeetingMembers getMembersByMeetingId(Long meetingId) {
+    meetingService.isExistOrThrow(meetingId);
+
+    List<MeetingMember> members = meetingMemberService.findAllByMeetingId(meetingId);
+    return meetingMapper.toMeetingMembers(members);
+  }
+
+  public void application(Long meetingId, String userId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    meetingMemberService.application(meeting, userId);
+  }
+
+  public void cancelApplication(Long meetingId, String userId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    meetingMemberService.cancelApplication(meeting, userId);
+  }
+
+  public MeetingMemberRole getRoleByMeetingIdAndUserId(Long meetingId, String userId) {
+    return meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId);
+  }
+
+  public MeetingMembers updateRole(String userId, Long meetingId, String targetUserId, MeetingMemberRole role) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    return meetingMapper.toMeetingMembers(meetingMemberService.updateRole(userId, meeting, targetUserId, role));
+  }
+
+  public MeetingMembers leave(Long meetingId, String userId, String targetUserId) {
+    Meeting meeting = meetingService.findById(meetingId);
+
+    return meetingMapper.toMeetingMembers(meetingMemberService.leave(meeting, userId, targetUserId));
   }
 }
