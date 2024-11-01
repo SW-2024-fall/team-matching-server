@@ -18,8 +18,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Table(name = "attendance_history")
@@ -44,11 +42,16 @@ public class AttendanceHistory {
     private User user;
 
     @Column(nullable = false)
-    private LocalDateTime date;
-
-    @Column(nullable = false)
     private byte awarded_score;
     
     @Column(nullable = false)
     private AttendanceState state;
+
+    public void updateState(AttendanceState state) {
+        this.state = state;
+    }
+
+    public void updateAwardedScore(byte awardedScore) {
+        this.awarded_score = awardedScore;
+    }
 }
