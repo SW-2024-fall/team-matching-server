@@ -73,6 +73,17 @@ public class HistoryService {
         return new PageImpl<>(histories, pageable, attendanceCount);
     }
 
+    public Page<HistoryElement> findAllByMeetingId(Pageable pageable, Long meetingId, String userId) {
+        boolean isMember = meetingMemberService.isMember(meetingId, userId);
+
+        if (isMember) {
+            return historyRepository.findAllByMeetingId(pageable, meetingId)
+                .map(history -> historyMapper.toHistoryElement(history));
+        }
+        return historyRepository.findAllPublicByMeetingId(pageable, meetingId)
+            .map(history -> historyMapper.toHistoryElement(history));
+    }
+
     public HistoryResponse findById(Long historyId, String userId) {
         List<AttendanceHistory> attendanceHistories = attendanceHistoryService.findAllByHistoryId(historyId);
         History history = historyRepository.findById(historyId)
