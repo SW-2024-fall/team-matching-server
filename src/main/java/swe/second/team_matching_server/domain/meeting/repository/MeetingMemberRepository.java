@@ -15,8 +15,8 @@ import java.util.Optional;
 
 @Repository
 public interface MeetingMemberRepository extends JpaRepository<MeetingMember, Long>{
-  @Query("SELECT mm.user FROM MeetingMember mm WHERE mm.meeting.id = :meetingId")
-  List<User> findUsersByMeetingId(@Param("meetingId") Long meetingId);
+  @Query("SELECT mm.user FROM MeetingMember mm WHERE mm.meeting.id = :meetingId AND mm.role IN (MEMBER, LEADER, CO_LEADER)")
+  List<User> findMemberUsersByMeetingId(@Param("meetingId") Long meetingId);
 
   List<MeetingMember> findAllByMeetingId(Long meetingId);
   List<MeetingMember> findAllByUserId(String userId);
