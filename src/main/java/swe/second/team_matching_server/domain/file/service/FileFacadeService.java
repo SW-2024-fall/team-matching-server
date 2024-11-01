@@ -8,7 +8,6 @@ import swe.second.team_matching_server.domain.file.model.mapper.FileMapper;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,26 +25,16 @@ public class FileFacadeService {
     this.fileMapper = fileMapper;
   }
 
-  public List<FileResponse> findFilesByMeetingId(Long meetingId) {
-    return fileMeetingService.findFilesByMeetingId(meetingId).stream()
+  public List<FileResponse> findAllByMeetingId(Long meetingId) {
+    return fileMeetingService.findAllByMeetingId(meetingId).stream()
         .map(fileMapper::toDto)
         .collect(Collectors.toList());
   }
 
-  public List<FileResponse> updateFilesByMeetingId(Long meetingId, List<FileCreateDto> newFileCreateDtos, List<String> deletedFileIds) {
-    return fileMeetingService.updateFilesByMeetingId(meetingId, newFileCreateDtos, deletedFileIds).stream()
-        .map(fileMapper::toDto)
-        .collect(Collectors.toList());
-  }
+  public FileResponse findByUserId(String userId) {
+    File file = fileUserService.findByUserId(userId);
 
-  public Optional<FileResponse> findFileByUserId(String userId) {
-    Optional<File> file = fileUserService.findFileByUserId(userId);
-
-    if (file.isPresent()) {
-      return Optional.of(fileMapper.toDto(file.get()));
-    }
-
-    return Optional.empty();
+    return fileMapper.toDto(file);
   }
 
   public FileResponse updateFileByUserId(String userId, FileCreateDto fileCreateDto) {
@@ -54,14 +43,14 @@ public class FileFacadeService {
     return fileMapper.toDto(file);
   }
 
-  public FileResponse saveFile(FileCreateDto fileCreateDto) {
-    File file = fileService.saveFile(fileCreateDto);
+  public FileResponse save(FileCreateDto fileCreateDto) {
+    File file = fileService.save(fileCreateDto);
 
     return fileMapper.toDto(file);
   }
 
-  public List<FileResponse> saveFiles(List<FileCreateDto> fileCreateDtos) {
-    List<File> files = fileService.saveFiles(fileCreateDtos);
+  public List<FileResponse> saveAll(List<FileCreateDto> fileCreateDtos) {
+    List<File> files = fileService.saveAll(fileCreateDtos);
 
     return files.stream()
         .map(fileMapper::toDto)
@@ -75,7 +64,7 @@ public class FileFacadeService {
     return fileMapper.toDto(file);
   }
 
-  public void deleteFile(String fileId) {
-    fileService.deleteFile(fileId);
+  public void delete(String fileId) {
+    fileService.delete(fileId);
   }
 }
