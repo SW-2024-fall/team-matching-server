@@ -52,7 +52,7 @@ public class FileController {
       .folder(fileFolder)
       .build();
 
-    return ApiResponse.success(fileFacadeService.saveFile(fileCreateDto));
+    return ApiResponse.success(fileFacadeService.save(fileCreateDto));
   }
 
   @PostMapping("/batch")
@@ -72,12 +72,12 @@ public class FileController {
         .build())
       .collect(Collectors.toList());
 
-    return ApiResponse.success(fileFacadeService.saveFiles(fileCreateDtos));
+    return ApiResponse.success(fileFacadeService.saveAll(fileCreateDtos));
   }
   
   @DeleteMapping("/{fileId}")
-  public ApiResponse<Void> deleteFile(@PathVariable String fileId) {
-    fileFacadeService.deleteFile(fileId);
+  public ApiResponse<Void> delete(@PathVariable String fileId) {
+    fileFacadeService.delete(fileId);
     return ApiResponse.success();
   }
 }

@@ -29,8 +29,8 @@ public class Base {
   @Column(nullable = true, columnDefinition = "TEXT")
   private String deletedReason;
 
-  public void setDeletedDate(LocalDateTime deletedDate) {
-    this.deletedAt = deletedDate;
+  public void delete() {
+    this.deletedAt = LocalDateTime.now();
   }
 
   public void setDeletedReason(String deletedReason) {

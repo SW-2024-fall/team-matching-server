@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import swe.second.team_matching_server.domain.file.model.mapper.FileMapper;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.file.repository.FileRepository;
 import swe.second.team_matching_server.domain.file.model.dto.FileCreateDto;
@@ -23,15 +22,13 @@ import java.util.stream.Collectors;
 public class FileService {
   private final FileRepository fileRepository;
   private final AmazonS3 amazonS3;
-  private final FileMapper fileMapper;
 
   @Value("${cloud.aws.s3.bucket}")
   private String bucket;
 
-  public FileService(FileRepository fileRepository, AmazonS3 amazonS3, FileMapper fileMapper) {
+  public FileService(FileRepository fileRepository, AmazonS3 amazonS3) {
     this.fileRepository = fileRepository;
     this.amazonS3 = amazonS3;
-    this.fileMapper = fileMapper;
   }
 
   @Transactional(readOnly = true)
@@ -41,7 +38,7 @@ public class FileService {
   }
 
   @Transactional
-  public File saveFile(FileCreateDto fileCreateDto) {
+  public File save(FileCreateDto fileCreateDto) {
     String fileId = UUID.randomUUID().toString();
     String filePath = fileCreateDto.getFolder().getFolderName() + '/' + fileId;
     
@@ -57,26 +54,41 @@ public class FileService {
 
     String url = amazonS3.getUrl(bucket, filePath).toString();
 
-    File file = fileMapper.toEntity(fileCreateDto, fileId, url);
+    File file = File.builder()
+        .id(fileId)
+        .url(url)
+        .size(fileCreateDto.getFile().getSize())
+        .originalName(fileCreateDto.getFile().getOriginalFilename())
+        .mimeType(fileCreateDto.getFile().getContentType())
+        .folder(fileCreateDto.getFolder())
+        .meeting(fileCreateDto.getMeeting())
+        .user(fileCreateDto.getUser())
+        .history(fileCreateDto.getHistory())
+        .build();
     return fileRepository.save(file);
   }
 
-  public List<File> saveFiles(List<FileCreateDto> fileCreateDtos) {
+  public List<File> saveAll(List<FileCreateDto> fileCreateDtos) {
     return fileCreateDtos.stream()
-        .map(this::saveFile)
+        .map(this::save)
         .collect(Collectors.toList());
   }
 
   @Transactional
-  public void deleteFile(String fileId) {
+  public void delete(String fileId) {
     File file = findFileById(fileId);
+    delete(file);
+  }
+
+  @Transactional
+  public void delete(File file) {
     String filePath = file.getFolder().getFolderName() + '/' + file.getId();
 
     amazonS3.deleteObject(bucket, filePath);
     fileRepository.delete(file);
   }
 
-  public void deleteFiles(List<String> fileIds) {
-    fileIds.forEach(this::deleteFile);
+  public void deleteAll(List<String> fileIds) {
+    fileIds.forEach(this::delete);
   }
 }

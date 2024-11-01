@@ -15,6 +15,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.JoinColumn;
+
 import lombok.Getter;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -22,12 +24,12 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
-
 import org.hibernate.annotations.Filter;
 
-
+import java.util.List;
 import java.util.ArrayList;
+
+
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
@@ -63,10 +65,14 @@ public class User extends Base{
     private String studentId;
 
     @Column(nullable = false)
+    private String phoneNumber;
+    @Column(nullable = false)
     @Builder.Default
     private byte attendanceScore = 80;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    // service에서 저장 시 기본 이미지 저장 필요
+    @OneToOne
+    @JoinColumn(name = "profile_image_id", nullable = false)
     private File profileImage;
 
     @Column(nullable = false)
