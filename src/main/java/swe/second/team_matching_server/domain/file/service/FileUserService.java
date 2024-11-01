@@ -13,18 +13,19 @@ import swe.second.team_matching_server.domain.file.model.exception.FileNotFoundE
 public class FileUserService {
   private final FileRepository fileRepository;
   private final FileService fileService;
-  private final File defaultProfileImage;
+  // private final File defaultProfileImage;
 
   public FileUserService(FileRepository fileRepository, FileService fileService) {
     this.fileRepository = fileRepository;
     this.fileService = fileService;
-    this.defaultProfileImage = fileRepository.findById("ed7eee25-0b03-4789-9e48-1a7226eb5850")
-        .orElseThrow(FileNotFoundException::new);
+    // this.defaultProfileImage = fileRepository.findById("ed7eee25-0b03-4789-9e48-1a7226eb5850")
+        // .orElseThrow(FileNotFoundException::new);
+        // .orElse(null);
   }
 
-  public File getDefaultProfileImage() {
-    return defaultProfileImage;
-  }
+  // public File getDefaultProfileImage() {
+  //   return defaultProfileImage;
+  // }
 
   public File findByUserId(String userId) {
     return fileRepository.findByUserId(userId).orElseThrow(FileNotFoundException::new);
