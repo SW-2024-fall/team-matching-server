@@ -163,9 +163,10 @@ public class MeetingService {
     @Transactional
     public Meeting create(List<FileCreateDto> fileCreateDtos, Meeting meeting, String leaderId) {
         isValidMeeting(meeting);
-
-        fileMeetingService.saveAllByMeeting(meeting, fileCreateDtos);
         meetingRepository.save(meeting);
+
+        List<File> files = fileMeetingService.saveAllByMeeting(meeting, fileCreateDtos);
+        meeting.updateThumbnailFiles(files);
 
         meetingMemberService.createLeader(meeting, leaderId);
         Meeting savedMeeting = meetingRepository.findByIdWithThumbnailFiles(meeting.getId())

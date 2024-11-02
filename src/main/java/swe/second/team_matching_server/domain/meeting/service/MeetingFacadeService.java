@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingResponse;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberRole;
@@ -69,9 +70,18 @@ public class MeetingFacadeService {
     return meetingResponse;
   }
 
-  public MeetingResponse create(List<FileCreateDto> fileCreateDtos, MeetingCreateDto meetingCreateDto, String userId) {
+  @Transactional
+  public MeetingResponse create(List<MultipartFile> files, MeetingCreateDto meetingCreateDto, String userId) {
+    List<FileCreateDto> fileCreateDtos = files == null ? new ArrayList<>() 
+      : files.stream().map(file -> FileCreateDto.builder()
+        .file(file)
+        .folder(FileFolder.MEETING)
+        .build())
+      .collect(Collectors.toList());
+
     Meeting meeting = meetingMapper.toEntity(meetingCreateDto);
     Meeting savedMeeting = meetingService.create(fileCreateDtos, meeting, userId);
+
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(savedMeeting.getId());
 
     MeetingResponse meetingResponse = meetingMapper.toResponse(savedMeeting, members);
@@ -79,6 +89,7 @@ public class MeetingFacadeService {
     return meetingResponse;
   }
 
+  @Transactional
   public MeetingResponse update(Long meetingId, List<MultipartFile> files, MeetingUpdateDto meetingUpdateDto, String userId) {
     List<FileCreateDto> fileCreateDtos = files == null ? new ArrayList<>() 
       : files.stream().map(file -> FileCreateDto.builder()
