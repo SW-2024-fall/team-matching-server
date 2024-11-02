@@ -5,7 +5,7 @@ import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +66,7 @@ public class History extends Base{
     private List<File> photos = new ArrayList();
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private LocalDate date;
 
     @Column(nullable = false)
     private String location;
@@ -83,7 +83,7 @@ public class History extends Base{
         this.isPublic = isPublic;
     }
 
-    public void updateDate(LocalDateTime date) {
+    public void updateDate(LocalDate date) {
         this.date = date;
     }
 
