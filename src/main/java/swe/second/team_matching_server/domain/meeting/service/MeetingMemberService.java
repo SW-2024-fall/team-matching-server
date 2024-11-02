@@ -12,6 +12,7 @@ import swe.second.team_matching_server.domain.meeting.model.exception.MeetingReq
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingLeaderLeaveException;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberApplicationMethod;
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingFullException;
+import swe.second.team_matching_server.domain.meeting.repository.MeetingRepository;
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingInvalidParticipantException;
 
 import org.springframework.stereotype.Service;
@@ -28,10 +29,12 @@ import lombok.extern.slf4j.Slf4j;
 public class MeetingMemberService {
     private final MeetingMemberRepository meetingMemberRepository;
     private final UserService userService;
+    private final MeetingRepository meetingRepository;
 
-    public MeetingMemberService(MeetingMemberRepository meetingMemberRepository, UserService userService) {
+    public MeetingMemberService(MeetingMemberRepository meetingMemberRepository, UserService userService, MeetingRepository meetingRepository) {
         this.meetingMemberRepository = meetingMemberRepository;
         this.userService = userService;
+        this.meetingRepository = meetingRepository;
     }
 
     public MeetingMember findById(Long id) {
@@ -107,12 +110,15 @@ public class MeetingMemberService {
 
     @Transactional
     public MeetingMember create(Meeting meeting, User user, MeetingMemberRole role) {
+        meeting.updateCurrentParticipants(meeting.getCurrentParticipants() + 1);
+        meetingRepository.save(meeting);
         MeetingMember meetingMember;
 
         try {
             meetingMember = findByMeetingIdAndUserId(meeting.getId(), user.getId());
             if (meetingMember.getRole() != MeetingMemberRole.LEADER) {
                 meetingMember.updateRole(role);
+                meetingMemberRepository.save(meetingMember);
             }
         } catch (MeetingMemberNotFoundException e) {
             meetingMember = MeetingMember.builder()
@@ -166,6 +172,8 @@ public class MeetingMemberService {
         if (countMembersByMeetingId(meeting.getId()) <= meeting.getMinParticipant()) {
             throw new MeetingInvalidParticipantException();
         }
+        meeting.updateCurrentParticipants(meeting.getCurrentParticipants() - 1);
+        meetingRepository.save(meeting);
         meetingMemberRepository.delete(targetMember);
 
         return findAllByMeetingId(meeting.getId());
@@ -216,6 +224,8 @@ public class MeetingMemberService {
         if (countMembersByMeetingId(meeting.getId()) >= meeting.getMaxParticipant()) {
             throw new MeetingFullException();
         }
+        meeting.updateCurrentParticipants(meeting.getCurrentParticipants() + 1);
+        meetingRepository.save(meeting);
         return updateRole(executorId, meeting, applicantId, MeetingMemberRole.MEMBER);
     }
 
