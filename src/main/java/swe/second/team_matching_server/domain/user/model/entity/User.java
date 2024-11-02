@@ -82,7 +82,7 @@ public class User extends Base{
     @Builder.Default
     private List<MeetingMember> meetings = new ArrayList<>();
 
-    public void updateattendanceScore(byte attendanceScore) {
+    public void updateAttendanceScore(byte attendanceScore) {
         this.attendanceScore = attendanceScore;
     }
 
