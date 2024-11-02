@@ -1,6 +1,6 @@
 package swe.second.team_matching_server.domain.history.model.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -20,13 +20,11 @@ public class HistoryCreateDto {
     private Long meetingId;
     @NotNull
     private String title;
-    @NotNull
-    private String writerId;
     private String content;
     @Builder.Default
     private boolean isPublic = true;
     @NotNull
-    private LocalDateTime date;
+    private LocalDate date;
     @NotNull
     private String location;
     @Builder.Default

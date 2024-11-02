@@ -3,7 +3,7 @@ package swe.second.team_matching_server.domain.history.model.dto;
 import swe.second.team_matching_server.domain.user.model.dto.UserElement;
 import swe.second.team_matching_server.domain.file.model.dto.FileResponse;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.Builder;
@@ -19,7 +19,7 @@ public class HistoryResponse {
     private Long id;
     private String title;
     private String content;
-    private LocalDateTime date;
+    private LocalDate date;
     private String location;
     private Long meetingId;
     private String meetingName;

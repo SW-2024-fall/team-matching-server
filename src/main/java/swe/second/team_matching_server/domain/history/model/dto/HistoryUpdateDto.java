@@ -1,6 +1,6 @@
 package swe.second.team_matching_server.domain.history.model.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
@@ -20,7 +20,7 @@ public class HistoryUpdateDto {
     private String title;
     private String content;
     private boolean isPublic;
-    private LocalDateTime date;
+    private LocalDate date;
     private String location;
-    private List<MemberAttendanceState> attendance;
+    private List<MemberAttendanceState> attendanceStates;
 }
