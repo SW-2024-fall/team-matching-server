@@ -36,7 +36,8 @@ public enum ResultCode {
   // history
   HISTORY_NO_ACCESS("해당 히스토리에 접근할 권한이 없습니다."),
   HISTORY_NO_PERMISSION("히스토리 생성 및 수정/삭제는 리더 및 부리더만 가능합니다."),
-  HISTORY_NOT_FOUND("해당 히스토리가 존재하지 않습니다.");
+  HISTORY_NOT_FOUND("해당 히스토리가 존재하지 않습니다."),
+  HISTORY_INVALID_ATTENDANCE_HISTORY("모든 멤버가 출석 히스토리를 가지고 있어야 합니다.");
 
   private final String message;
 
