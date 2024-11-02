@@ -21,6 +21,7 @@ import swe.second.team_matching_server.domain.meeting.model.exception.MeetingInv
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberRole;
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingNoPermissionException;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
+import swe.second.team_matching_server.domain.file.service.FileService;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -34,13 +35,16 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final FileMeetingService fileMeetingService;
     private final MeetingMemberService meetingMemberService;
+    private final FileService fileService;
 
     public MeetingService(MeetingRepository meetingRepository, 
         FileMeetingService fileMeetingService, 
-        MeetingMemberService meetingMemberService) {
+        MeetingMemberService meetingMemberService,
+        FileService fileService) {
         this.meetingRepository = meetingRepository;
         this.fileMeetingService = fileMeetingService;
         this.meetingMemberService = meetingMemberService;
+        this.fileService = fileService;
     }
 
     public Page<Meeting> findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
@@ -110,7 +114,7 @@ public class MeetingService {
     }
 
     @Transactional
-    public Meeting update(Long meetingId, List<String> deletedFileIds, List<FileCreateDto> fileCreateDtos, MeetingUpdateDto meetingUpdateDto, String userId) {
+    public Meeting update(Long meetingId, List<FileCreateDto> updateFileDtos, MeetingUpdateDto meetingUpdateDto, String userId) {
         MeetingMemberRole role = meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId);
         if (role != MeetingMemberRole.LEADER) {
             throw new MeetingNoPermissionException();
@@ -118,11 +122,10 @@ public class MeetingService {
 
         Meeting meeting = meetingRepository.findById(meetingId)
             .orElseThrow(() -> new MeetingNotFoundException());
-        List<File> files = fileMeetingService.updateAllByMeeting(meeting, fileCreateDtos, deletedFileIds);
+        List<File> existingFiles = meeting.getThumbnailFiles();
+        List<File> files = fileService.updateAll(existingFiles, updateFileDtos);
         
-        if ((fileCreateDtos != null && fileCreateDtos.size() > 0) || (deletedFileIds != null && deletedFileIds.size() > 0)) {
-            meeting.updateThumbnailFiles(files);
-        }
+        meeting.updateThumbnailFiles(files);
         if (meetingUpdateDto.getName() != null) {
             meeting.updateName(meetingUpdateDto.getName());
         }

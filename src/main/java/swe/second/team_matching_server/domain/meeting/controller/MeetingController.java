@@ -3,6 +3,7 @@ package swe.second.team_matching_server.domain.meeting.controller;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import swe.second.team_matching_server.domain.meeting.service.MeetingFacadeService;
 import swe.second.team_matching_server.common.dto.ApiResponse;
@@ -16,7 +17,6 @@ import swe.second.team_matching_server.domain.file.model.exception.FileMaxCountE
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
 
 import java.util.List;
-// import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @RestController
@@ -66,17 +66,15 @@ public class MeetingController {
 
   @PutMapping("/{meetingId}")
   public ApiResponse<MeetingResponse> update(@PathVariable Long meetingId, 
-    @RequestParam(value = "deletedFiles", required = false) List<String> deletedFileIds,
-    @RequestParam(value = "files", required = false) List<FileCreateDto> fileCreateDtos, 
+    @RequestParam(value = "files", required = false) List<MultipartFile> files, 
     @ModelAttribute MeetingUpdateDto meetingUpdateDto) {
-    if (fileCreateDtos != null && fileCreateDtos.size() > 5) {
+    if (files != null && files.size() > 5) {
       throw new FileMaxCountExceededException();
     }
-
     // 추후 token에서 user 정보 가져오기. 지금은 그냥 예시
     String userId = "test";
 
-    return ApiResponse.success(meetingFacadeService.update(meetingId, deletedFileIds, fileCreateDtos, meetingUpdateDto, userId));
+    return ApiResponse.success(meetingFacadeService.update(meetingId, files, meetingUpdateDto, userId));
   }
 
   @DeleteMapping("/{meetingId}")
