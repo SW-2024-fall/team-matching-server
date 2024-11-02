@@ -52,13 +52,11 @@ public class MeetingService {
         Page<Meeting> meetings = meetingRepository.findAll(pageable);
         // int likeCount = meetingLikeService.countLikesByMeetingId(meetings.getContent().get(0).getId());
         // int commentCount = meetingCommentService.countCommentsByMeetingId(meetings.getContent().get(0).getId());
-
+        
         meetings.getContent().forEach(meeting -> {
-            int currentParticipant = meetingMemberService.countMembersByMeetingId(meeting.getId()); 
             int likeCount = 1;
             int commentCount = 1;
             
-            meeting.setCurrentParticipant(currentParticipant);
             meeting.setLikeCount(likeCount);
             meeting.setCommentCount(commentCount);
         });
