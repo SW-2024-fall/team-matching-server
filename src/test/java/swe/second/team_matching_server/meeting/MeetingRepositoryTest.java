@@ -19,7 +19,6 @@ import java.util.Set;
 
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
-import swe.second.team_matching_server.domain.file.model.entity.File;
 
 public class MeetingRepositoryTest {
 
@@ -41,11 +40,10 @@ public class MeetingRepositoryTest {
       .days(Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY))
       .startDate(LocalDate.now())
       .endDate(LocalDate.now().plusDays(1))
-      .min_participants((byte) 1)
-      .max_participants((byte) 10)
+      .minParticipant((byte) 1)
+      .maxParticipant((byte) 10)
       .startTime(LocalTime.now())
       .endTime(LocalTime.now().plusHours(1))
-      .isRecurring(true)
       .type(MeetingType.REGULAR)
       .categories(List.of(MeetingCategory.EXERCISE, MeetingCategory.DANCE))
       .features(List.of("feature1", "feature2"))

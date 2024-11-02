@@ -12,7 +12,7 @@ import lombok.Data;
 @SuperBuilder
 @AllArgsConstructor
 public class UserElement {
-    private Long id;
+    private String id;
     private String name;
     private String profileUrl;
     private int attendenceScore;

@@ -16,7 +16,7 @@ public class MeetingElement {
     private List<String> features;
     private String preview;
     private int maxParticipant;
-    private int currentParticipant;
+    private int currentParticipants;
     private String thumbnailUrl;
     private LocalDate startDate;
     private LocalDate endDate;

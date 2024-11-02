@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.history.model.entity.History;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
@@ -31,4 +33,26 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.thumbnailFiles")
     Page<Meeting> findAll(Pageable pageable);
+
+    @Query("SELECT m FROM Meeting m " + 
+        "LEFT JOIN FETCH m.thumbnailFiles " +
+        "WHERE m.categories IN :categories " +
+        "AND m.currentParticipants >= :min " + 
+        "AND m.currentParticipants <= :max")
+    Page<Meeting> findAllWithCategoriesAndMinAndMax(List<MeetingCategory> categories, int min, int max, Pageable pageable);
+
+    @Query("SELECT m FROM Meeting m " + 
+        "LEFT JOIN FETCH m.thumbnailFiles " +
+        "WHERE m.type = :type " +
+        "AND m.currentParticipants >= :min " + 
+        "AND m.currentParticipants <= :max")
+    Page<Meeting> findAllWithTypeAndMinAndMax(MeetingType type, int min, int max, Pageable pageable);
+
+    @Query("SELECT m FROM Meeting m " + 
+        "LEFT JOIN FETCH m.thumbnailFiles " +
+        "WHERE m.categories IN :categories " +
+        "AND m.type = :type " +
+        "AND m.currentParticipants >= :min " + 
+        "AND m.currentParticipants <= :max")
+    Page<Meeting> findAllWithConditions(List<MeetingCategory> categories, MeetingType type, int min, int max, Pageable pageable);
 }
