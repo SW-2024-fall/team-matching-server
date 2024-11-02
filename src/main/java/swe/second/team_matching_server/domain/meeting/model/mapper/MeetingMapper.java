@@ -99,7 +99,7 @@ public class MeetingMapper {
 
     private MeetingMemberElement toMeetingMemberElement(MeetingMember member) {
         return MeetingMemberElement.builder()
-            .id(member.getId())
+            .id(member.getUser().getId())
             .name(member.getUser().getUsername())
             .profileUrl(member.getUser().getProfileImage().getUrl())
             .attendenceScore(member.getUser().getAttendanceScore())
