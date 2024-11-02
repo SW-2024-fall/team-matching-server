@@ -50,7 +50,7 @@ public class HistoryController {
     }
 
     @PostMapping
-    public ApiResponse<HistoryResponse> save(@RequestPart HistoryCreateDto historyCreateDto, 
+    public ApiResponse<HistoryResponse> save(@RequestPart HistoryCreateDto history, 
         @RequestParam(value = "files", required = false) List<MultipartFile> files) {
         // 추후 token에서 user 정보를 가져오도록 수정해야함
         String userId = "test";
@@ -59,12 +59,12 @@ public class HistoryController {
             throw new FileMaxCountExceededException();
         }
 
-        return ApiResponse.success(historyService.save(historyCreateDto, files, userId));
+        return ApiResponse.success(historyService.save(history, files, userId));
     }
 
     @PutMapping("/{historyId}")
     public ApiResponse<HistoryResponse> update(@PathVariable Long historyId, 
-        @RequestPart HistoryUpdateDto historyUpdateDto,
+        @RequestPart HistoryUpdateDto history,
         @RequestParam(value = "files", required = false) List<MultipartFile> files) {
         // 추후 token에서 user 정보를 가져오도록 수정해야함
         String userId = "test";
@@ -73,7 +73,7 @@ public class HistoryController {
             throw new FileMaxCountExceededException();
         }
 
-        return ApiResponse.success(historyService.update(historyId, historyUpdateDto, files, userId));
+        return ApiResponse.success(historyService.update(historyId, history, files, userId));
     }
 
     @DeleteMapping("/{historyId}")
