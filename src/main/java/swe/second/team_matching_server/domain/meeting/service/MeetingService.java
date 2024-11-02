@@ -48,8 +48,18 @@ public class MeetingService {
     }
 
     public Page<Meeting> findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
-        // List<MeetingElement> meetings = meetingRepository.findAllWithConditions(categories, type, min, max);
-        Page<Meeting> meetings = meetingRepository.findAll(pageable);
+        Page<Meeting> meetings;
+        if (min < 2) min = 2;
+        if (max > 99) max = 99;
+        if (categories != null && type != null) {
+            meetings = meetingRepository.findAllWithConditions(categories, type, min, max, pageable);
+        } else if (categories != null) {
+            meetings = meetingRepository.findAllWithCategoriesAndMinAndMax(categories, min, max, pageable);
+        } else if (type != null) {
+            meetings = meetingRepository.findAllWithTypeAndMinAndMax(type, min, max, pageable);
+        } else {
+            meetings = meetingRepository.findAll(pageable);
+        }
         // int likeCount = meetingLikeService.countLikesByMeetingId(meetings.getContent().get(0).getId());
         // int commentCount = meetingCommentService.countCommentsByMeetingId(meetings.getContent().get(0).getId());
         
