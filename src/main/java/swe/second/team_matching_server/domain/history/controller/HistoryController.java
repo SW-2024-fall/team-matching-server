@@ -6,16 +6,17 @@ import swe.second.team_matching_server.domain.history.model.dto.HistoryCreateDto
 import swe.second.team_matching_server.domain.history.model.dto.HistoryElement;
 import swe.second.team_matching_server.domain.history.model.dto.HistoryResponse;
 import swe.second.team_matching_server.domain.history.model.dto.HistoryUpdateDto;
-import swe.second.team_matching_server.domain.file.model.dto.FileCreateDto;
 import swe.second.team_matching_server.domain.file.model.exception.FileMaxCountExceededException;
+
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,33 +50,34 @@ public class HistoryController {
     }
 
     @PostMapping
-    public ApiResponse<HistoryResponse> save(@ModelAttribute HistoryCreateDto historyCreateDto, @RequestParam(value = "files", required = false) List<FileCreateDto> fileCreateDtos) {
+    public ApiResponse<HistoryResponse> save(@RequestPart HistoryCreateDto historyCreateDto, 
+        @RequestParam(value = "files", required = false) List<MultipartFile> files) {
         // 추후 token에서 user 정보를 가져오도록 수정해야함
         String userId = "test";
 
-        if (fileCreateDtos != null && fileCreateDtos.size() > 5) {
+        if (files != null && files.size() > 5) {
             throw new FileMaxCountExceededException();
         }
 
-        return ApiResponse.success(historyService.save(historyCreateDto, fileCreateDtos, userId));
+        return ApiResponse.success(historyService.save(historyCreateDto, files, userId));
     }
 
     @PutMapping("/{historyId}")
     public ApiResponse<HistoryResponse> update(@PathVariable Long historyId, 
-        @ModelAttribute HistoryUpdateDto historyUpdateDto,
-        @RequestParam(value = "files", required = false) List<FileCreateDto> fileCreateDtos) {
+        @RequestPart HistoryUpdateDto historyUpdateDto,
+        @RequestParam(value = "files", required = false) List<MultipartFile> files) {
         // 추후 token에서 user 정보를 가져오도록 수정해야함
         String userId = "test";
 
-        if (fileCreateDtos != null && fileCreateDtos.size() > 5) {
+        if (files != null && files.size() > 5) {
             throw new FileMaxCountExceededException();
         }
 
-        return ApiResponse.success(historyService.update(historyId, historyUpdateDto, fileCreateDtos, userId));
+        return ApiResponse.success(historyService.update(historyId, historyUpdateDto, files, userId));
     }
 
-    @DeleteMapping
-    public ApiResponse<?> delete(@RequestParam Long historyId) {
+    @DeleteMapping("/{historyId}")
+    public ApiResponse<?> delete(@PathVariable Long historyId) {
         // 추후 token에서 user 정보를 가져오도록 수정해야함
         String userId = "test";
 
