@@ -3,12 +3,8 @@ package swe.second.team_matching_server.domain.meeting.service;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
-import swe.second.team_matching_server.domain.meeting.service.MeetingCommentService;
-import swe.second.team_matching_server.domain.meeting.service.MeetingHistoryService;
-import swe.second.team_matching_server.domain.meeting.service.MeetingLikeService;
-import swe.second.team_matching_server.domain.meeting.service.MeetingMemberService;
-import swe.second.team_matching_server.domain.meeting.service.MeetingScrapService;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingResponse;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberRole;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingCreateDto;
@@ -21,16 +17,17 @@ import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMembers;
+import swe.second.team_matching_server.common.enums.FileFolder;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Service
 public class MeetingFacadeService {
   private final MeetingService meetingService;
   private final MeetingCommentService meetingCommentService;
   private final MeetingScrapService meetingScrapService;
-  private final MeetingHistoryService meetingHistoryService;
   private final MeetingLikeService meetingLikeService;
   private final MeetingMemberService meetingMemberService;
   private final MeetingMapper meetingMapper;
@@ -39,14 +36,12 @@ public class MeetingFacadeService {
     MeetingService meetingService, 
     MeetingCommentService meetingCommentService, 
     MeetingScrapService meetingScrapService, 
-    MeetingHistoryService meetingHistoryService, 
     MeetingLikeService meetingLikeService, 
     MeetingMemberService meetingMemberService, 
     MeetingMapper meetingMapper) {
     this.meetingService = meetingService;
     this.meetingCommentService = meetingCommentService;
     this.meetingScrapService = meetingScrapService;
-    this.meetingHistoryService = meetingHistoryService;
     this.meetingLikeService = meetingLikeService;
     this.meetingMemberService = meetingMemberService;
     this.meetingMapper = meetingMapper;
@@ -84,8 +79,15 @@ public class MeetingFacadeService {
     return meetingResponse;
   }
 
-  public MeetingResponse update(Long meetingId, List<String> deletedFileIds, List<FileCreateDto> fileCreateDtos, MeetingUpdateDto meetingUpdateDto, String userId) {
-    Meeting updatedMeeting = meetingService.update(meetingId, deletedFileIds, fileCreateDtos, meetingUpdateDto, userId);
+  public MeetingResponse update(Long meetingId, List<MultipartFile> files, MeetingUpdateDto meetingUpdateDto, String userId) {
+    List<FileCreateDto> fileCreateDtos = files == null ? new ArrayList<>() 
+      : files.stream().map(file -> FileCreateDto.builder()
+        .file(file)
+        .folder(FileFolder.MEETING)
+        .build())
+      .collect(Collectors.toList());
+
+    Meeting updatedMeeting = meetingService.update(meetingId, fileCreateDtos, meetingUpdateDto, userId);
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(updatedMeeting.getId());
 
     MeetingResponse meetingResponse = meetingMapper.toResponse(updatedMeeting, members);
