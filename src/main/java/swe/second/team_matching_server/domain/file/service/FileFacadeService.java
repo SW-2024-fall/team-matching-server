@@ -27,33 +27,33 @@ public class FileFacadeService {
 
   public List<FileResponse> findAllByMeetingId(Long meetingId) {
     return fileMeetingService.findAllByMeetingId(meetingId).stream()
-        .map(fileMapper::toDto)
+        .map(fileMapper::toFileResponse)
         .collect(Collectors.toList());
   }
 
   public FileResponse findByUserId(String userId) {
     File file = fileUserService.findByUserId(userId);
 
-    return fileMapper.toDto(file);
+    return fileMapper.toFileResponse(file);
   }
 
   public FileResponse updateFileByUserId(String userId, FileCreateDto fileCreateDto) {
     File file = fileUserService.updateFileByUserId(userId, fileCreateDto);
 
-    return fileMapper.toDto(file);
+    return fileMapper.toFileResponse(file);
   }
 
   public FileResponse save(FileCreateDto fileCreateDto) {
     File file = fileService.save(fileCreateDto);
 
-    return fileMapper.toDto(file);
+    return fileMapper.toFileResponse(file);
   }
 
   public List<FileResponse> saveAll(List<FileCreateDto> fileCreateDtos) {
     List<File> files = fileService.saveAll(fileCreateDtos);
 
     return files.stream()
-        .map(fileMapper::toDto)
+        .map(fileMapper::toFileResponse)
         .collect(Collectors.toList());
   }
 
@@ -61,7 +61,7 @@ public class FileFacadeService {
   public FileResponse findById(String fileId) {
     File file = fileService.findFileById(fileId);
 
-    return fileMapper.toDto(file);
+    return fileMapper.toFileResponse(file);
   }
 
   public void delete(String fileId) {

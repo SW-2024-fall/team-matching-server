@@ -1,8 +1,5 @@
 package swe.second.team_matching_server.domain.meeting.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +12,7 @@ import swe.second.team_matching_server.domain.file.model.dto.FileCreateDto;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
-import swe.second.team_matching_server.common.enums.ResultCode;
-import swe.second.team_matching_server.common.exception.IllegalArgumentException;
+import swe.second.team_matching_server.domain.file.model.exception.FileMaxCountExceededException;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
 
 import java.util.List;
@@ -59,7 +55,7 @@ public class MeetingController {
   @PostMapping
   public ApiResponse<MeetingResponse> create(@RequestParam(value = "files", required = false) List<FileCreateDto> fileCreateDtos, @ModelAttribute MeetingCreateDto meetingCreateDto) {
     if (fileCreateDtos != null && fileCreateDtos.size() > 5) {
-      throw new IllegalArgumentException(ResultCode.FILE_MAX_COUNT_EXCEEDED);
+      throw new FileMaxCountExceededException();
     }
     
     // 추후 token에서 user 정보 가져오기. 지금은 그냥 예시
@@ -74,7 +70,7 @@ public class MeetingController {
     @RequestParam(value = "files", required = false) List<FileCreateDto> fileCreateDtos, 
     @ModelAttribute MeetingUpdateDto meetingUpdateDto) {
     if (fileCreateDtos != null && fileCreateDtos.size() > 5) {
-      throw new IllegalArgumentException(ResultCode.FILE_MAX_COUNT_EXCEEDED);
+      throw new FileMaxCountExceededException();
     }
 
     // 추후 token에서 user 정보 가져오기. 지금은 그냥 예시
