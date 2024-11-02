@@ -2,6 +2,7 @@ package swe.second.team_matching_server.domain.history.model.entity;
 
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.user.model.entity.User;
+import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.history.model.enums.AttendanceState;
 
 import jakarta.persistence.Entity;
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AttendanceHistory {
+public class AttendanceHistory extends Base{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
