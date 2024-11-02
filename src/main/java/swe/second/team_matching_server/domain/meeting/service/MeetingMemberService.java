@@ -57,6 +57,13 @@ public class MeetingMemberService {
         return meetingMemberRepository.findMeetingsByUserId(userId);
     }
 
+    public List<MeetingMember> findAllMembersByMeetingId(Long meetingId) {
+        return meetingMemberRepository.findAllByMeetingId(meetingId).stream()
+            .filter(member -> member.getRole() != MeetingMemberRole.EXTERNAL
+                && member.getRole() != MeetingMemberRole.REQUESTED)
+            .collect(Collectors.toList());
+    }
+
     public List<MeetingMember> findAllByMeetingId(Long meetingId) {
         return meetingMemberRepository.findAllByMeetingId(meetingId).stream()
             .filter(member -> member.getRole() != MeetingMemberRole.EXTERNAL)
