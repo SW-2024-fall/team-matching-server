@@ -131,8 +131,9 @@ public class Meeting extends Base {
     @Builder.Default
     private List<MeetingMember> members = new ArrayList<>();
 
-    @Transient
-    private int currentParticipant;
+    @Column(nullable = false)
+    @Builder.Default
+    private int currentParticipants = 0;
 
     @Transient
     private int likeCount;
@@ -205,8 +206,8 @@ public class Meeting extends Base {
         this.categories = categories;
     }
 
-    public void setCurrentParticipant(int currentParticipant) {
-        this.currentParticipant = currentParticipant;
+    public void updateCurrentParticipants(int currentParticipants) {
+        this.currentParticipants = currentParticipants;
     }
 
     public void setLikeCount(int likeCount) {
