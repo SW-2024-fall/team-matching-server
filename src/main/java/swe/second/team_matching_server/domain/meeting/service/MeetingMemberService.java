@@ -113,6 +113,7 @@ public class MeetingMemberService {
             meetingMember = findByMeetingIdAndUserId(meeting.getId(), user.getId());
             if (meetingMember.getRole() != MeetingMemberRole.LEADER) {
                 meetingMember.updateRole(role);
+                meetingMemberRepository.save(meetingMember);
             }
         } catch (MeetingMemberNotFoundException e) {
             meetingMember = MeetingMember.builder()
