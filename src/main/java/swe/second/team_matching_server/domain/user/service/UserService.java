@@ -20,4 +20,9 @@ public class UserService {
         return userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException());
     }
+
+    @Transactional
+    public User save(User user) {
+        return userRepository.save(user);
+    }
 }
