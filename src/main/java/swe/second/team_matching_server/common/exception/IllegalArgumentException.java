@@ -7,6 +7,10 @@ public class IllegalArgumentException extends TeamMatchingException {
         super(resultCode);
     }
 
+    public IllegalArgumentException(String message) {
+        super(ResultCode.ILLEGAL_ARGUMENT, message);
+    }
+
     public IllegalArgumentException(ResultCode resultCode, String message) {
         super(resultCode, message);
     }

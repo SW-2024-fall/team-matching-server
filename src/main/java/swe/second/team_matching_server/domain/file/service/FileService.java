@@ -38,6 +38,12 @@ public class FileService {
   }
 
   @Transactional
+  public List<File> updateAll(List<File> existingFiles, List<FileCreateDto> updatedFileCreateDtos) {
+    existingFiles.forEach(this::delete);
+    return saveAll(updatedFileCreateDtos);
+  }
+
+  @Transactional
   public File save(FileCreateDto fileCreateDto) {
     String fileId = UUID.randomUUID().toString();
     String filePath = fileCreateDto.getFolder().getFolderName() + '/' + fileId;

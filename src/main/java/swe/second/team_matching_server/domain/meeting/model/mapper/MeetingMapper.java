@@ -45,7 +45,7 @@ public class MeetingMapper {
             .features(meeting.getFeatures())
             .preview(meeting.getContent())
             .maxParticipant(meeting.getMaxParticipant())
-            .currentParticipant(meeting.getCurrentParticipant())
+            .currentParticipants(meeting.getCurrentParticipants())
             .thumbnailUrl(meeting.getThumbnailFiles().size() > 0 ? meeting.getThumbnailFiles().get(0).getUrl() : null)
             .startDate(meeting.getStartDate())
             .endDate(meeting.getEndDate())
@@ -99,7 +99,7 @@ public class MeetingMapper {
 
     private MeetingMemberElement toMeetingMemberElement(MeetingMember member) {
         return MeetingMemberElement.builder()
-            .id(member.getId())
+            .id(member.getUser().getId())
             .name(member.getUser().getUsername())
             .profileUrl(member.getUser().getProfileImage().getUrl())
             .attendenceScore(member.getUser().getAttendanceScore())

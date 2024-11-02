@@ -21,6 +21,7 @@ import swe.second.team_matching_server.domain.meeting.model.exception.MeetingInv
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberRole;
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingNoPermissionException;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
+import swe.second.team_matching_server.domain.file.service.FileService;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -34,27 +35,38 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final FileMeetingService fileMeetingService;
     private final MeetingMemberService meetingMemberService;
+    private final FileService fileService;
 
     public MeetingService(MeetingRepository meetingRepository, 
         FileMeetingService fileMeetingService, 
-        MeetingMemberService meetingMemberService) {
+        MeetingMemberService meetingMemberService,
+        FileService fileService) {
         this.meetingRepository = meetingRepository;
         this.fileMeetingService = fileMeetingService;
         this.meetingMemberService = meetingMemberService;
+        this.fileService = fileService;
     }
 
     public Page<Meeting> findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
-        // List<MeetingElement> meetings = meetingRepository.findAllWithConditions(categories, type, min, max);
-        Page<Meeting> meetings = meetingRepository.findAll(pageable);
+        Page<Meeting> meetings;
+        if (min < 2) min = 2;
+        if (max > 99) max = 99;
+        if (categories != null && type != null) {
+            meetings = meetingRepository.findAllWithConditions(categories, type, min, max, pageable);
+        } else if (categories != null) {
+            meetings = meetingRepository.findAllWithCategoriesAndMinAndMax(categories, min, max, pageable);
+        } else if (type != null) {
+            meetings = meetingRepository.findAllWithTypeAndMinAndMax(type, min, max, pageable);
+        } else {
+            meetings = meetingRepository.findAll(pageable);
+        }
         // int likeCount = meetingLikeService.countLikesByMeetingId(meetings.getContent().get(0).getId());
         // int commentCount = meetingCommentService.countCommentsByMeetingId(meetings.getContent().get(0).getId());
-
+        
         meetings.getContent().forEach(meeting -> {
-            int currentParticipant = meetingMemberService.countMembersByMeetingId(meeting.getId()); 
             int likeCount = 1;
             int commentCount = 1;
             
-            meeting.setCurrentParticipant(currentParticipant);
             meeting.setLikeCount(likeCount);
             meeting.setCommentCount(commentCount);
         });
@@ -110,7 +122,7 @@ public class MeetingService {
     }
 
     @Transactional
-    public Meeting update(Long meetingId, List<String> deletedFileIds, List<FileCreateDto> fileCreateDtos, MeetingUpdateDto meetingUpdateDto, String userId) {
+    public Meeting update(Long meetingId, List<FileCreateDto> updateFileDtos, MeetingUpdateDto meetingUpdateDto, String userId) {
         MeetingMemberRole role = meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId);
         if (role != MeetingMemberRole.LEADER) {
             throw new MeetingNoPermissionException();
@@ -118,11 +130,10 @@ public class MeetingService {
 
         Meeting meeting = meetingRepository.findById(meetingId)
             .orElseThrow(() -> new MeetingNotFoundException());
-        List<File> files = fileMeetingService.updateAllByMeeting(meeting, fileCreateDtos, deletedFileIds);
+        List<File> existingFiles = meeting.getThumbnailFiles();
+        List<File> files = fileService.updateAll(existingFiles, updateFileDtos);
         
-        if ((fileCreateDtos != null && fileCreateDtos.size() > 0) || (deletedFileIds != null && deletedFileIds.size() > 0)) {
-            meeting.updateThumbnailFiles(files);
-        }
+        meeting.updateThumbnailFiles(files);
         if (meetingUpdateDto.getName() != null) {
             meeting.updateName(meetingUpdateDto.getName());
         }
@@ -160,9 +171,10 @@ public class MeetingService {
     @Transactional
     public Meeting create(List<FileCreateDto> fileCreateDtos, Meeting meeting, String leaderId) {
         isValidMeeting(meeting);
-
-        fileMeetingService.saveAllByMeeting(meeting, fileCreateDtos);
         meetingRepository.save(meeting);
+
+        List<File> files = fileMeetingService.saveAllByMeeting(meeting, fileCreateDtos);
+        meeting.updateThumbnailFiles(files);
 
         meetingMemberService.createLeader(meeting, leaderId);
         Meeting savedMeeting = meetingRepository.findByIdWithThumbnailFiles(meeting.getId())
