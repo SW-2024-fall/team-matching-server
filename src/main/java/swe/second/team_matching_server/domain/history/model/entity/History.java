@@ -4,6 +4,7 @@ import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.user.model.entity.User;
+import swe.second.team_matching_server.domain.history.model.entity.AttendanceHistory;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 import org.hibernate.annotations.Filter;
 

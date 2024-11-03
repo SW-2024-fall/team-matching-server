@@ -1,3 +1,6 @@
+import com.google.cloud.vertexai.VertexAI;
+import com.google.cloud.vertexai.generativeai.GenerativeModel;
+
 @Service
 @RequiredArgsConstructor
 public class MeetingAnalyzer {

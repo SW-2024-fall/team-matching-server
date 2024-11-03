@@ -9,7 +9,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 @Configuration
-public class AwsS3Config {
+public class AWSS3Config {
   @Value("${cloud.aws.s3.bucket}")
   private String bucket;
   @Value("${cloud.aws.credentials.access-key}")

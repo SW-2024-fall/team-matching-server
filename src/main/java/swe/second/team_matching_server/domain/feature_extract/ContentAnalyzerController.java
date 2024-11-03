@@ -2,6 +2,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import swe.second.team_matching_server.domain.feature_extract.ContentAnalyzerFacade;
+import com.google.cloud.vertexai.VertexAI;
+import com.google.cloud.vertexai.generativeai.GenerativeModel;
 
 @RestController
 @RequestMapping("/api/analyzer")
