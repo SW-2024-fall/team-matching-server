@@ -56,16 +56,15 @@ public class MeetingFacadeService {
   public MeetingResponse findById(Long meetingId, String userId) {
     Meeting meeting = meetingService.findByIdWithThumbnailFiles(meetingId);
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(meetingId);
-    MeetingMemberRole userRole = meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId);
-
-    if (userRole != MeetingMemberRole.LEADER && userRole != MeetingMemberRole.CO_LEADER) {
+    boolean isExecutive = meetingMemberService.isExecutive(meetingId, userId);
+    if (!isExecutive) {
       members = members.stream()
         .filter(member -> member.getRole() != MeetingMemberRole.REQUESTED)
         .collect(Collectors.toList());
     }
 
-    MeetingResponse meetingResponse = meetingMapper.toResponse(meeting, members);
-    meetingResponse.setUserRole(userRole);
+    MeetingResponse meetingResponse = meetingMapper.toResponse(meeting, members, isExecutive);
+    meetingResponse.setUserRole(meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId));
 
     return meetingResponse;
   }
@@ -84,7 +83,7 @@ public class MeetingFacadeService {
 
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(savedMeeting.getId());
 
-    MeetingResponse meetingResponse = meetingMapper.toResponse(savedMeeting, members);
+    MeetingResponse meetingResponse = meetingMapper.toResponse(savedMeeting, members, true);
     meetingResponse.setUserRole(MeetingMemberRole.LEADER);
     return meetingResponse;
   }
@@ -101,7 +100,7 @@ public class MeetingFacadeService {
     Meeting updatedMeeting = meetingService.update(meetingId, fileCreateDtos, meetingUpdateDto, userId);
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(updatedMeeting.getId());
 
-    MeetingResponse meetingResponse = meetingMapper.toResponse(updatedMeeting, members);
+    MeetingResponse meetingResponse = meetingMapper.toResponse(updatedMeeting, members, true);
     meetingResponse.setUserRole(meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId));
     return meetingResponse;
   }
@@ -110,17 +109,25 @@ public class MeetingFacadeService {
     meetingService.delete(meetingId, userId);
   }
 
-  public MeetingMembers getMembersByMeetingId(Long meetingId) {
+  public MeetingMembers getMembersByMeetingId(Long meetingId, String userId) {
     meetingService.isExistOrThrow(meetingId);
 
-    List<MeetingMember> members = meetingMemberService.findAllByMeetingId(meetingId);
-    return meetingMapper.toMeetingMembers(members);
+    List<MeetingMember> members;
+    boolean isExecutive = meetingMemberService.isExecutive(meetingId, userId);
+    if (!isExecutive) {
+      members = meetingMemberService.findAllByMeetingId(meetingId);
+    } else {
+      members = meetingMemberService.findAllMembersByMeetingId(meetingId);
+    }
+
+    return meetingMapper.toMeetingMembers(members, isExecutive);
   }
 
-  public void application(Long meetingId, String userId) {
+  public String application(Long meetingId, String userId) {
     Meeting meeting = meetingService.findById(meetingId);
 
-    meetingMemberService.application(meeting, userId);
+    return meetingMemberService.application(meeting, userId).getRole() 
+      == MeetingMemberRole.REQUESTED ? "requested" : "accepted";
   }
 
   public void cancelApplication(Long meetingId, String userId) {
@@ -136,36 +143,36 @@ public class MeetingFacadeService {
   public MeetingMembers updateRole(String userId, Long meetingId, String targetUserId, MeetingMemberRole role) {
     Meeting meeting = meetingService.findById(meetingId);
 
-    return meetingMapper.toMeetingMembers(meetingMemberService.updateRole(userId, meeting, targetUserId, role));
+    return meetingMapper.toMeetingMembers(meetingMemberService.updateRole(userId, meeting, targetUserId, role), true);
   }
 
   public MeetingMembers acceptApplication(Long meetingId, String userId, String targetUserId) {
     Meeting meeting = meetingService.findById(meetingId);
 
-    return meetingMapper.toMeetingMembers(meetingMemberService.acceptApplication(userId, meeting, targetUserId));
+    return meetingMapper.toMeetingMembers(meetingMemberService.acceptApplication(userId, meeting, targetUserId), true);
   }
 
   public MeetingMembers rejectApplication(Long meetingId, String userId, String targetUserId) {
     Meeting meeting = meetingService.findById(meetingId);
 
-    return meetingMapper.toMeetingMembers(meetingMemberService.rejectApplication(userId, meeting, targetUserId));
+    return meetingMapper.toMeetingMembers(meetingMemberService.rejectApplication(userId, meeting, targetUserId), true);
   }
 
   public MeetingMembers leave(Long meetingId, String userId, String targetUserId) {
     Meeting meeting = meetingService.findById(meetingId);
 
-    return meetingMapper.toMeetingMembers(meetingMemberService.leave(meeting, userId, targetUserId));
+    return meetingMapper.toMeetingMembers(meetingMemberService.leave(meeting, userId, targetUserId), true);
   }
 
   public MeetingMembers upgradeToCoLeader(Long meetingId, String userId, String targetUserId) {
     Meeting meeting = meetingService.findById(meetingId);
 
-    return meetingMapper.toMeetingMembers(meetingMemberService.upgradeToCoLeader(userId, meeting, targetUserId));
+    return meetingMapper.toMeetingMembers(meetingMemberService.upgradeToCoLeader(userId, meeting, targetUserId), true);
   }
 
   public MeetingMembers downgradeToMember(Long meetingId, String userId, String targetUserId) {
     Meeting meeting = meetingService.findById(meetingId);
 
-    return meetingMapper.toMeetingMembers(meetingMemberService.downgradeToMember(userId, meeting, targetUserId));
+    return meetingMapper.toMeetingMembers(meetingMemberService.downgradeToMember(userId, meeting, targetUserId), true);
   }
 }

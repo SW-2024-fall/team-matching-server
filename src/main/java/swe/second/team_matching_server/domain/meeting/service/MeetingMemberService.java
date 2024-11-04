@@ -142,9 +142,9 @@ public class MeetingMemberService {
     }
 
     @Transactional
-    public void application(Meeting meeting, String userId) {
+    public MeetingMember application(Meeting meeting, String userId) {
         if (isMember(meeting.getId(), userId)) {
-            return ;
+            return findByMeetingIdAndUserId(meeting.getId(), userId);
         }
         User user = userService.findById(userId);
 
@@ -152,9 +152,9 @@ public class MeetingMemberService {
             throw new MeetingFullException();
         }
         if (meeting.getApplicationMethod() == MeetingMemberApplicationMethod.FIRST_COME_FIRST_SERVED) {
-            create(meeting, user, MeetingMemberRole.MEMBER);
+            return create(meeting, user, MeetingMemberRole.MEMBER);
         } else {
-            create(meeting, user, MeetingMemberRole.REQUESTED);
+            return create(meeting, user, MeetingMemberRole.REQUESTED);
         }
     }
 

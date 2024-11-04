@@ -14,6 +14,7 @@ import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Component
 public class MeetingMapper {
@@ -52,11 +53,11 @@ public class MeetingMapper {
             .build();
     }
 
-    public MeetingResponse toResponse(Meeting meeting, List<MeetingMember> members) {
+    public MeetingResponse toResponse(Meeting meeting, List<MeetingMember> members, boolean isExecutive) {
         return MeetingResponse.builder()
             .id(meeting.getId())
             .info(toMeetingInfo(meeting))
-            .members(toMeetingMembers(members))
+            .members(toMeetingMembers(members, isExecutive))
             .build();
     }
 
@@ -83,21 +84,21 @@ public class MeetingMapper {
             .build();
     }
 
-    public MeetingMembers toMeetingMembers(List<MeetingMember> members) {
+    public MeetingMembers toMeetingMembers(List<MeetingMember> members, boolean isExecutive) {
         return MeetingMembers.builder()
             .member(members.stream()
-                .filter(m -> m.getRole() != MeetingMemberRole.REQUESTED
+                .filter(m -> (isExecutive || m.getRole() != MeetingMemberRole.REQUESTED)
                     && m.getRole() != MeetingMemberRole.EXTERNAL)
-                .map(this::toMeetingMemberElement)
+                .map(m -> toMeetingMemberElement(m, isExecutive))
                 .collect(Collectors.toList()))
-            .requested(members.stream()
+            .requested(isExecutive ? members.stream()
                 .filter(m -> m.getRole() == MeetingMemberRole.REQUESTED)
-                .map(this::toMeetingMemberElement)
-                .collect(Collectors.toList()))
+                .map(m -> toMeetingMemberElement(m, isExecutive))
+                .collect(Collectors.toList()) : new ArrayList<>())
             .build();
     }
 
-    private MeetingMemberElement toMeetingMemberElement(MeetingMember member) {
+    private MeetingMemberElement toMeetingMemberElement(MeetingMember member, boolean isExecutive) {
         return MeetingMemberElement.builder()
             .id(member.getUser().getId())
             .name(member.getUser().getUsername())
@@ -105,7 +106,7 @@ public class MeetingMapper {
             .attendenceScore(member.getUser().getAttendanceScore())
             .major(member.getUser().getMajor())
             .studentId(member.getUser().getStudentId())
-            .phoneNumber(member.getUser().getPhoneNumber())
+            .phoneNumber(isExecutive ? member.getUser().getPhoneNumber() : null)
             .role(member.getRole())
             .build();
     }    

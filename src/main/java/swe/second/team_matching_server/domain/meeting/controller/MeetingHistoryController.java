@@ -12,6 +12,10 @@ import swe.second.team_matching_server.common.dto.ApiResponse;
 import swe.second.team_matching_server.domain.history.model.dto.HistoryElement;
 import swe.second.team_matching_server.domain.history.service.HistoryService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+
+@Tag(name = "MeetingHistory", description = "모임 히스토리 API")
 @RestController
 @RequestMapping("/api/meetings/{meetingId}/histories")
 public class MeetingHistoryController {
@@ -22,6 +26,7 @@ public class MeetingHistoryController {
     }
 
     @GetMapping
+    @Operation(summary = "모임 활동내역 조회", description = "모임 활동내역을 조회합니다.")
     public ApiResponse<List<HistoryElement>> findAllByMeetingId(
         @PathVariable Long meetingId, Pageable pageable) {
         // 추후 token에서 user 정보를 가져오도록 수정해야함
