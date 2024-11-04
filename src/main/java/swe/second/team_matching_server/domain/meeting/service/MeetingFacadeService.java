@@ -117,10 +117,11 @@ public class MeetingFacadeService {
     return meetingMapper.toMeetingMembers(members);
   }
 
-  public void application(Long meetingId, String userId) {
+  public String application(Long meetingId, String userId) {
     Meeting meeting = meetingService.findById(meetingId);
 
-    meetingMemberService.application(meeting, userId);
+    return meetingMemberService.application(meeting, userId).getRole() 
+      == MeetingMemberRole.REQUESTED ? "requested" : "accepted";
   }
 
   public void cancelApplication(Long meetingId, String userId) {
