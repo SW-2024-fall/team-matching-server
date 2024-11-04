@@ -31,12 +31,12 @@ public class MeetingMemberController {
     }
 
     @PostMapping("/application")
-    public ApiResponse<Void> application(@PathVariable Long meetingId) {
+    public ApiResponse<String> application(@PathVariable Long meetingId) {
         // TODO: 로그인 구현 후 수정
         String userId = "test2";
 
-        meetingFacadeService.application(meetingId, userId);
-        return ApiResponse.success();
+        String result = meetingFacadeService.application(meetingId, userId);
+        return ApiResponse.success(result);
     }
 
     @DeleteMapping("/application")
