@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "MeetingMember", description = "모임원 관리 API")
@@ -55,6 +56,7 @@ public class MeetingMemberController {
 
     @PutMapping("application/accept")
     @Operation(summary = "모임원 신청 수락", description = "모임원 신청을 수락합니다. (리더/부리더만 가능)")
+    @Parameter(name = "targetUserId", description = "수락할 대상 유저의 userId", required = true)
     public ApiResponse<MeetingMembers> acceptApplication(@PathVariable Long meetingId, @RequestBody MeetingMemberTargetDto targetDto) {
         // TODO: 로그인 구현 후 수정
         String userId = "test";
@@ -65,7 +67,8 @@ public class MeetingMemberController {
 
     @PutMapping("/application/reject")
     @Operation(summary = "모임원 신청 거절", description = "모임원 신청을 거절합니다. (리더/부리더만 가능)")
-    public ApiResponse<MeetingMembers> rejectApplication(@PathVariable Long meetingId, @RequestBody MeetingMemberUpdateDto dto) {
+    @Parameter(name = "targetUserId", description = "거절할 대상 유저의 userId", required = true)
+    public ApiResponse<MeetingMembers> rejectApplication(@PathVariable Long meetingId, @RequestBody MeetingMemberTargetDto dto) {
         // TODO: 로그인 구현 후 수정
         String userId = "test";
 
@@ -75,7 +78,8 @@ public class MeetingMemberController {
 
     @PutMapping("/upgrade")
     @Operation(summary = "부모임장 승급", description = "멤버를 부모임장으로 승급합니다.(리더/부리더만 가능)")
-    public ApiResponse<MeetingMembers> upgradeToCoLeader(@PathVariable Long meetingId, @RequestBody MeetingMemberUpdateDto dto) {
+    @Parameter(name = "targetUserId", description = "승급할 대상 유저의 userId", required = true)
+    public ApiResponse<MeetingMembers> upgradeToCoLeader(@PathVariable Long meetingId, @RequestBody MeetingMemberTargetDto dto) {
         // TODO: 로그인 구현 후 수정
         String userId = "test";
 
@@ -85,7 +89,8 @@ public class MeetingMemberController {
 
     @PutMapping("/downgrade")
     @Operation(summary = "멤버 강등", description = "부모임장을 멤버로 강등합니다.(리더/부리더만 가능)")
-    public ApiResponse<MeetingMembers> downgradeToMember(@PathVariable Long meetingId, @RequestBody MeetingMemberUpdateDto dto) {
+    @Parameter(name = "targetUserId", description = "강등할 대상 유저의 userId", required = true)
+    public ApiResponse<MeetingMembers> downgradeToMember(@PathVariable Long meetingId, @RequestBody MeetingMemberTargetDto dto) {
         // TODO: 로그인 구현 후 수정
         String userId = "test";
 
@@ -95,7 +100,8 @@ public class MeetingMemberController {
 
     @PutMapping("/leave")
     @Operation(summary = "모임원 내보내기", description = "모임원을 내보냅니다.(리더/부리더만 가능)")
-    public ApiResponse<MeetingMembers> leave(@PathVariable Long meetingId, @RequestBody MeetingMemberUpdateDto dto) {
+    @Parameter(name = "targetUserId", description = "내보낼 대상 유저의 userId", required = true)
+    public ApiResponse<MeetingMembers> leave(@PathVariable Long meetingId, @RequestBody MeetingMemberTargetDto dto) {
         // TODO: 로그인 구현 후 수정
         String userId = "test";
 
