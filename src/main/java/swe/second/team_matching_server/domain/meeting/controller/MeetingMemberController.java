@@ -29,9 +29,12 @@ public class MeetingMemberController {
     }
 
     @GetMapping
-    @Operation(summary = "모임원 조회", description = "모임원을 조회합니다.")
+    @Operation(summary = "모임원 조회", description = "모임원을 조회합니다. 리더/부리더와 다른이들에게 보여지는 게 다릅니다. (리더/부리더: requested 공개, phonenumber 공개)")
     public ApiResponse<MeetingMembers> getMembers(@PathVariable Long meetingId) {
-        return ApiResponse.success(meetingFacadeService.getMembersByMeetingId(meetingId));
+        // TODO: 로그인 구현 후 수정
+        String userId = "test2";
+
+        return ApiResponse.success(meetingFacadeService.getMembersByMeetingId(meetingId, userId));
     }
 
     @PostMapping("/application")
