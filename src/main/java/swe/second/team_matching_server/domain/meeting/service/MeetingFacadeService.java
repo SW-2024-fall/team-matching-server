@@ -63,7 +63,11 @@ public class MeetingFacadeService {
         .collect(Collectors.toList());
     }
 
-    MeetingResponse meetingResponse = meetingMapper.toResponse(meeting, members, isExecutive);
+    int likes = meetingLikeService.countByMeetingId(meetingId);
+    int comments = meetingCommentService.countByMeetingId(meetingId);
+    int scraps = meetingScrapService.countByMeetingId(meetingId);
+
+    MeetingResponse meetingResponse = meetingMapper.toResponse(meeting, members, isExecutive, likes, comments, scraps);
     meetingResponse.setUserRole(meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId));
 
     return meetingResponse;

@@ -34,4 +34,7 @@ public class MeetingInfo {
     private List<String> analyzedFeatures;
     private String analyzedIntroduction;
     private MeetingMemberApplicationMethod applicationMethod;
+    private int likes;
+    private int comments;
+    private int scraps;
 }
