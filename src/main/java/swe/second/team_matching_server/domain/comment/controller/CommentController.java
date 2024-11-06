@@ -14,6 +14,8 @@ import swe.second.team_matching_server.common.dto.ApiResponse;
 
 import swe.second.team_matching_server.domain.comment.model.dto.CommentResponse;
 import swe.second.team_matching_server.domain.comment.service.CommentService;
+import swe.second.team_matching_server.domain.meeting.service.MeetingService;
+import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.comment.model.dto.CommentCreateDto;
 
 import java.util.List;
@@ -22,9 +24,11 @@ import java.util.List;
 @RequestMapping("/api/comments")
 public class CommentController {
     private final CommentService commentService;
+    private final MeetingService meetingService;
 
-    public CommentController(CommentService commentService) {
+    public CommentController(CommentService commentService, MeetingService meetingService) {
         this.commentService = commentService;
+        this.meetingService = meetingService;
     }
 
     @GetMapping
@@ -39,7 +43,9 @@ public class CommentController {
         // TODO: 인증 추가
         String userId = "test";
         commentCreateDto.setUserId(userId);
-        CommentResponse commentResponse = commentService.createComment(commentCreateDto);
+        Meeting meeting = meetingService.findById(commentCreateDto.getMeetingId());
+
+        CommentResponse commentResponse = commentService.createComment(commentCreateDto, meeting);
 
         return ApiResponse.success(commentResponse);
     }
@@ -49,7 +55,9 @@ public class CommentController {
         // TODO: 인증 추가
         String userId = "test";
         commentCreateDto.setUserId(userId);
-        CommentResponse commentResponse = commentService.updateComment(commentId, commentCreateDto);
+        Meeting meeting = meetingService.findById(commentCreateDto.getMeetingId());
+
+        CommentResponse commentResponse = commentService.updateComment(commentId, commentCreateDto, meeting);
 
         return ApiResponse.success(commentResponse);
     }

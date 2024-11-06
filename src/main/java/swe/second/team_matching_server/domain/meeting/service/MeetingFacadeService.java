@@ -23,7 +23,8 @@ import swe.second.team_matching_server.domain.like.service.UserMeetingLikeServic
 import swe.second.team_matching_server.domain.scrap.service.UserMeetingScrapService;
 import swe.second.team_matching_server.domain.comment.service.CommentService;
 import swe.second.team_matching_server.domain.comment.model.dto.CommentResponse;
-
+import swe.second.team_matching_server.domain.user.service.UserService;
+import swe.second.team_matching_server.domain.user.model.entity.User;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class MeetingFacadeService {
   private final UserMeetingLikeService userMeetingLikeService;
   private final MeetingMemberService meetingMemberService;
   private final MeetingMapper meetingMapper;
+  private final UserService userService;
 
   public MeetingFacadeService(
     MeetingService meetingService,  
@@ -43,13 +45,15 @@ public class MeetingFacadeService {
     UserMeetingScrapService userMeetingScrapService, 
     UserMeetingLikeService userMeetingLikeService,
     MeetingMemberService meetingMemberService, 
-    MeetingMapper meetingMapper) {
+    MeetingMapper meetingMapper,
+    UserService userService) {
     this.meetingService = meetingService;
     this.commentService = commentService;
     this.userMeetingScrapService = userMeetingScrapService;
     this.userMeetingLikeService = userMeetingLikeService;
     this.meetingMemberService = meetingMemberService;
     this.meetingMapper = meetingMapper;
+    this.userService = userService;
   }
 
   public Page<MeetingElement> findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
@@ -196,5 +200,19 @@ public class MeetingFacadeService {
     Meeting meeting = meetingService.findById(meetingId);
 
     return meetingMapper.toMeetingMembers(meetingMemberService.downgradeToMember(userId, meeting, targetUserId), true);
+  }
+
+  public void likeMeeting(Long meetingId, String userId) {
+    Meeting meeting = meetingService.findById(meetingId);
+    User user = userService.findById(userId);
+
+    userMeetingLikeService.save(meeting, user);
+  }
+
+  public void unlikeMeeting(Long meetingId, String userId) {
+    Meeting meeting = meetingService.findById(meetingId);
+    User user = userService.findById(userId);
+
+    userMeetingLikeService.delete(meeting, user);
   }
 }

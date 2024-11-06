@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import swe.second.team_matching_server.domain.comment.repository.CommentRepository;
 import swe.second.team_matching_server.domain.comment.model.dto.CommentResponse;
 import swe.second.team_matching_server.domain.comment.model.entity.Comment;
-import swe.second.team_matching_server.domain.meeting.service.MeetingService;
 import swe.second.team_matching_server.domain.user.service.UserService;
 import swe.second.team_matching_server.common.exception.UnauthorizedException;
 import swe.second.team_matching_server.domain.comment.model.dto.CommentCreateDto;
@@ -25,16 +24,14 @@ import org.springframework.data.domain.Pageable;
 @Service
 public class CommentService {
   private final CommentRepository commentRepository;
-  private final MeetingService meetingService;
   private final UserService userService;
   private final MeetingMapper meetingMapper;
 
-  public CommentService(CommentRepository commentRepository, MeetingService meetingService, UserService userService, MeetingMapper meetingMapper) {
+  public CommentService(CommentRepository commentRepository, UserService userService, MeetingMapper meetingMapper) {
     this.commentRepository = commentRepository;
-    this.meetingService = meetingService;
     this.userService = userService;
     this.meetingMapper = meetingMapper;
-  } 
+  }
 
   public int countByMeetingId(Long meetingId) {
     return commentRepository.countByMeetingId(meetingId);
@@ -53,9 +50,9 @@ public class CommentService {
   }
 
   @Transactional
-  public CommentResponse createComment(CommentCreateDto commentCreateDto) {
+  public CommentResponse createComment(CommentCreateDto commentCreateDto, Meeting meeting) {
     Comment comment = commentRepository.save(Comment.builder()
-        .meeting(meetingService.findById(commentCreateDto.getMeetingId()))
+        .meeting(meeting)
         .user(userService.findById(commentCreateDto.getUserId()))
         .content(commentCreateDto.getContent())
         .parentComment(commentCreateDto.getParentCommentId() != null ? findById(commentCreateDto.getParentCommentId()) : null)
@@ -65,7 +62,7 @@ public class CommentService {
   }
 
   @Transactional
-  public CommentResponse updateComment(Long commentId, CommentCreateDto commentCreateDto) {
+  public CommentResponse updateComment(Long commentId, CommentCreateDto commentCreateDto, Meeting meeting) {
     Comment comment = findById(commentId);
     comment.updateContent(commentCreateDto.getContent());
     commentRepository.save(comment);
