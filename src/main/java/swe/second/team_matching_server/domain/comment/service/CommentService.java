@@ -10,10 +10,16 @@ import swe.second.team_matching_server.domain.user.service.UserService;
 import swe.second.team_matching_server.common.exception.UnauthorizedException;
 import swe.second.team_matching_server.domain.comment.model.dto.CommentCreateDto;
 import swe.second.team_matching_server.domain.comment.model.exception.CommentNotFoundException;
+import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
+import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
+import swe.second.team_matching_server.domain.meeting.model.mapper.MeetingMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Transactional(readOnly = true)
 @Service
@@ -21,11 +27,13 @@ public class CommentService {
   private final CommentRepository commentRepository;
   private final MeetingService meetingService;
   private final UserService userService;
+  private final MeetingMapper meetingMapper;
 
-  public CommentService(CommentRepository commentRepository, MeetingService meetingService, UserService userService) {
+  public CommentService(CommentRepository commentRepository, MeetingService meetingService, UserService userService, MeetingMapper meetingMapper) {
     this.commentRepository = commentRepository;
     this.meetingService = meetingService;
     this.userService = userService;
+    this.meetingMapper = meetingMapper;
   } 
 
   public int countByMeetingId(Long meetingId) {
@@ -73,6 +81,11 @@ public class CommentService {
     }
     comment.setDeletedAt(LocalDateTime.now());
     commentRepository.save(comment);
+  }
+
+  public Page<MeetingElement> findAllByUserId(String userId, Pageable pageable) {
+    Page<Meeting> meetings = commentRepository.findMeetingsByUserId(userId, pageable);
+    return meetings.map(meetingMapper::toMeetingElement);
   }
 
 }

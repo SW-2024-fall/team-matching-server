@@ -8,8 +8,13 @@ import swe.second.team_matching_server.domain.meeting.service.MeetingService;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 import swe.second.team_matching_server.domain.like.model.entity.UserMeetingLike;
 import swe.second.team_matching_server.domain.user.service.UserService;
+import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
+import swe.second.team_matching_server.domain.meeting.model.mapper.MeetingMapper;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +22,7 @@ public class UserMeetingLikeService {
     private final UserMeetingLikeRepository userMeetingLikeRepository;
     private final MeetingService meetingService;
     private final UserService userService;
+    private final MeetingMapper meetingMapper;
 
     public int countByMeetingId(Long meetingId) {
         return userMeetingLikeRepository.countByMeetingId(meetingId);
@@ -50,5 +56,10 @@ public class UserMeetingLikeService {
         Meeting meeting = meetingService.findById(meetingId);
         User user = userService.findById(userId);
         delete(meeting, user);
+    }
+
+    public Page<MeetingElement> findAllByUserId(String userId, Pageable pageable) {
+        Page<Meeting> meetings = userMeetingLikeRepository.findMeetingsByUserId(userId, pageable);
+        return meetings.map(meetingMapper::toMeetingElement);
     }
 }
