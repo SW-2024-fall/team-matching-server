@@ -22,6 +22,8 @@ import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberR
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingNoPermissionException;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
 import swe.second.team_matching_server.domain.file.service.FileService;
+import swe.second.team_matching_server.domain.like.service.UserMeetingLikeService;
+import swe.second.team_matching_server.domain.comment.service.CommentService;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -36,15 +38,21 @@ public class MeetingService {
     private final FileMeetingService fileMeetingService;
     private final MeetingMemberService meetingMemberService;
     private final FileService fileService;
+    private final UserMeetingLikeService userMeetingLikeService;
+    private final CommentService commentService;
 
     public MeetingService(MeetingRepository meetingRepository, 
         FileMeetingService fileMeetingService, 
         MeetingMemberService meetingMemberService,
-        FileService fileService) {
+        FileService fileService,
+        UserMeetingLikeService userMeetingLikeService,
+        CommentService commentService) {
         this.meetingRepository = meetingRepository;
         this.fileMeetingService = fileMeetingService;
         this.meetingMemberService = meetingMemberService;
         this.fileService = fileService;
+        this.userMeetingLikeService = userMeetingLikeService;
+        this.commentService = commentService;
     }
 
     public Page<Meeting> findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
@@ -60,12 +68,10 @@ public class MeetingService {
         } else {
             meetings = meetingRepository.findAll(pageable);
         }
-        // int likeCount = meetingLikeService.countLikesByMeetingId(meetings.getContent().get(0).getId());
-        // int commentCount = meetingCommentService.countCommentsByMeetingId(meetings.getContent().get(0).getId());
-        
+
         meetings.getContent().forEach(meeting -> {
-            int likeCount = 1;
-            int commentCount = 1;
+            int likeCount = userMeetingLikeService.countByMeetingId(meeting.getId());
+            int commentCount = commentService.countByMeetingId(meeting.getId());
             
             meeting.setLikeCount(likeCount);
             meeting.setCommentCount(commentCount);

@@ -37,7 +37,7 @@ public class CommentService {
       .orElseThrow(() -> new CommentNotFoundException());
   }
 
-  public List<CommentResponse> getCommentsByMeetingId(Long meetingId) {
+  public List<CommentResponse> findAllByMeetingId(Long meetingId) {
     return commentRepository.findAllByMeetingId(meetingId)
       .stream()
       .map(CommentResponse::from)

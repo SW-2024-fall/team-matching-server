@@ -29,7 +29,7 @@ public class CommentController {
 
     @GetMapping
     public ApiResponse<List<CommentResponse>> getComments(@RequestParam Long meetingId) {
-        List<CommentResponse> comments = commentService.getCommentsByMeetingId(meetingId);
+        List<CommentResponse> comments = commentService.findAllByMeetingId(meetingId);
 
         return ApiResponse.success(comments);
     }

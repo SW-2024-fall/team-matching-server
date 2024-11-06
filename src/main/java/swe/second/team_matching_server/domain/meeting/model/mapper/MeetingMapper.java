@@ -53,13 +53,11 @@ public class MeetingMapper {
             .build();
     }
 
-    public MeetingResponse toResponse(Meeting meeting, List<MeetingMember> members, boolean isExecutive, boolean isLiked, boolean isScraped) {
+    public MeetingResponse toResponse(Meeting meeting, List<MeetingMember> members, boolean isExecutive) {
         return MeetingResponse.builder()
             .id(meeting.getId())
             .info(toMeetingInfo(meeting))
             .members(toMeetingMembers(members, isExecutive))
-            .isLiked(isLiked)
-            .isScraped(isScraped)
             .build();
     }
 
