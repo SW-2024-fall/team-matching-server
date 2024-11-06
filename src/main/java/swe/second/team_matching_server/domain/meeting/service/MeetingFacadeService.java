@@ -20,7 +20,7 @@ import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMembers;
 import swe.second.team_matching_server.common.enums.FileFolder;
 import swe.second.team_matching_server.domain.like.service.UserMeetingLikeService;
-
+import swe.second.team_matching_server.domain.scrap.service.UserMeetingScrapService;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public class MeetingFacadeService {
   private final MeetingService meetingService;
   private final MeetingCommentService meetingCommentService;
-  private final MeetingScrapService meetingScrapService;
+  private final UserMeetingScrapService userMeetingScrapService;
   private final UserMeetingLikeService userMeetingLikeService;
   private final MeetingMemberService meetingMemberService;
   private final MeetingMapper meetingMapper;
@@ -37,13 +37,13 @@ public class MeetingFacadeService {
   public MeetingFacadeService(
     MeetingService meetingService,  
     MeetingCommentService meetingCommentService, 
-    MeetingScrapService meetingScrapService, 
+    UserMeetingScrapService userMeetingScrapService, 
     UserMeetingLikeService userMeetingLikeService,
     MeetingMemberService meetingMemberService, 
     MeetingMapper meetingMapper) {
     this.meetingService = meetingService;
     this.meetingCommentService = meetingCommentService;
-    this.meetingScrapService = meetingScrapService;
+    this.userMeetingScrapService = userMeetingScrapService;
     this.userMeetingLikeService = userMeetingLikeService;
     this.meetingMemberService = meetingMemberService;
     this.meetingMapper = meetingMapper;
@@ -66,9 +66,9 @@ public class MeetingFacadeService {
 
     int likes = userMeetingLikeService.countByMeetingId(meetingId);
     int comments = meetingCommentService.countByMeetingId(meetingId);
-    int scraps = meetingScrapService.countByMeetingId(meetingId);
+    int scraps = userMeetingScrapService.countByMeetingId(meetingId);
     boolean isLiked = userMeetingLikeService.isLiked(userId, meetingId);
-    boolean isScraped = meetingScrapService.isScraped(userId, meetingId);
+    boolean isScraped = userMeetingScrapService.isScraped(userId, meetingId);
 
     meeting.setLikeCount(likes);
     meeting.setCommentCount(comments);
@@ -110,7 +110,7 @@ public class MeetingFacadeService {
     Meeting updatedMeeting = meetingService.update(meetingId, fileCreateDtos, meetingUpdateDto, userId);
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(updatedMeeting.getId());
     boolean isLiked = userMeetingLikeService.isLiked(userId, meetingId);
-    boolean isScraped = meetingScrapService.isScraped(userId, meetingId);
+    boolean isScraped = userMeetingScrapService.isScraped(userId, meetingId);
 
     MeetingResponse meetingResponse = meetingMapper.toResponse(updatedMeeting, members, true, isLiked, isScraped);
     meetingResponse.setUserRole(meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId));
