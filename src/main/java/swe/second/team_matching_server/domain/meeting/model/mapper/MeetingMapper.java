@@ -53,15 +53,17 @@ public class MeetingMapper {
             .build();
     }
 
-    public MeetingResponse toResponse(Meeting meeting, List<MeetingMember> members, boolean isExecutive, int likes, int comments, int scraps) {
+    public MeetingResponse toResponse(Meeting meeting, List<MeetingMember> members, boolean isExecutive, boolean isLiked, boolean isScraped) {
         return MeetingResponse.builder()
             .id(meeting.getId())
-            .info(toMeetingInfo(meeting, likes, comments, scraps))
+            .info(toMeetingInfo(meeting))
             .members(toMeetingMembers(members, isExecutive))
+            .isLiked(isLiked)
+            .isScraped(isScraped)
             .build();
     }
 
-    private MeetingInfo toMeetingInfo(Meeting meeting, int likes, int comments, int scraps) {
+    private MeetingInfo toMeetingInfo(Meeting meeting) {
         return MeetingInfo.builder()
             .name(meeting.getName())
             .title(meeting.getTitle())
@@ -81,9 +83,9 @@ public class MeetingMapper {
             .endTime(meeting.getEndTime())
             .meta(meeting.getMeta())
             .applicationMethod(meeting.getApplicationMethod())
-            .likes(likes)
-            .comments(comments)
-            .scraps(scraps)
+            .likes(meeting.getLikeCount())
+            .comments(meeting.getCommentCount())
+            .scraps(meeting.getScrapCount())
             .build();
     }
 

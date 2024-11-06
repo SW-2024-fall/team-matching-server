@@ -15,4 +15,6 @@ public class MeetingResponse {
     private MeetingMemberRole userRole;
     private MeetingInfo info;
     private MeetingMembers members;
+    private boolean isLiked;
+    private boolean isScraped;
 }
