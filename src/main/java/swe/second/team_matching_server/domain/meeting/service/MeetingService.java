@@ -59,13 +59,17 @@ public class MeetingService {
         Page<Meeting> meetings;
         if (min < 2) min = 2;
         if (max > 99) max = 99;
-        if (categories != null && type != null) {
+        if (categories != null && categories.size() > 0 && type != null) {
+            log.info("findAllWithConditions: categories: {}, type: {}", categories, type);
             meetings = meetingRepository.findAllWithConditions(categories, type, min, max, pageable);
-        } else if (categories != null) {
+        } else if (categories != null && categories.size() > 0) {
+            log.info("findAllWithConditions: categories: {}", categories);
             meetings = meetingRepository.findAllWithCategoriesAndMinAndMax(categories, min, max, pageable);
         } else if (type != null) {
+            log.info("findAllWithConditions: type: {}", type);
             meetings = meetingRepository.findAllWithTypeAndMinAndMax(type, min, max, pageable);
         } else {
+            log.info("findAllWithConditions: no conditions");
             meetings = meetingRepository.findAll(pageable);
         }
 
