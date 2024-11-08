@@ -15,24 +15,30 @@ import swe.second.team_matching_server.core.auth.jwt.TokenProvider;
 import swe.second.team_matching_server.core.auth.repository.RefreshTokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import swe.second.team_matching_server.domain.user.model.entity.User;
+import swe.second.team_matching_server.domain.user.repository.UserRepository;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+
+
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public UserResponseDto signup(UserRequestDto memberRequestDto) {
-        if (memberRepository.existsByEmail(memberRequestDto.getEmail())) {
+        if (userRepository.existsByEmail(memberRequestDto.getEmail())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
         }
 
-        User member = memberRequestDto.toMember(passwordEncoder);
-        return UserResponseDto.of(memberRepository.save(member));
+        User user = userRequestDto.toUser(passwordEncoder);
+        return UserResponseDto.of(userRepository.save(user));
     }
 
     @Transactional
