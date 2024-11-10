@@ -1,7 +1,6 @@
 package swe.second.team_matching_server.domain.meeting.FeatureExtract;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import com.google.auth.oauth2.GoogleCredentials;
 import dev.langchain4j.model.vertexai.VertexAiGeminiChatModel;
 import swe.second.team_matching_server.domain.history.model.entity.History;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMemberElement;
@@ -10,8 +9,6 @@ import swe.second.team_matching_server.domain.meeting.model.enums.*;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
 
-import java.io.IOException;
-import java.io.FileInputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
