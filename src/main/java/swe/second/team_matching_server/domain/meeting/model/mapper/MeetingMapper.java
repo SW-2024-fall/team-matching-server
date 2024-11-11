@@ -84,6 +84,7 @@ public class MeetingMapper {
             .likes(meeting.getLikeCount())
             .comments(meeting.getCommentCount())
             .scraps(meeting.getScrapCount())
+            .days(meeting.getDays())
             .build();
     }
 

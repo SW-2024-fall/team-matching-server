@@ -3,9 +3,12 @@ package swe.second.team_matching_server.domain.meeting.model.dto;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberApplicationMethod;
+
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 import lombok.Data;
 import lombok.Builder;
@@ -37,4 +40,5 @@ public class MeetingInfo {
     private int likes;
     private int comments;
     private int scraps;
+    private Set<DayOfWeek> days;
 }
