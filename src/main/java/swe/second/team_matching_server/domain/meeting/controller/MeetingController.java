@@ -55,6 +55,15 @@ public class MeetingController {
     return ApiResponse.success(meetingFacadeService.findAllWithConditions(pageable, categoriesEnum, type, minParticipant, maxParticipant));
   }
 
+  @GetMapping("/user")
+  @Operation(summary = "유저가 참여한 모임 조회", description = "유저가 참여한 모임을 조회합니다.")
+  public ApiResponse<List<MeetingElement>> findAllByUserId() {
+    // 추후 token에서 user 정보 가져오기. 지금은 그냥 예시
+    String userId = "test";
+    
+    return ApiResponse.success(meetingFacadeService.findAllByUserId(userId));
+  }
+
   @GetMapping("/{meetingId}")
   @Operation(summary = "모임 상세 조회", description = "모임 상세를 조회합니다.")
   public ApiResponse<MeetingResponse> findById(@PathVariable Long meetingId) {

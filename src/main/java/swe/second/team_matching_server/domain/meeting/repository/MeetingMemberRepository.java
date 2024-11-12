@@ -18,6 +18,9 @@ public interface MeetingMemberRepository extends JpaRepository<MeetingMember, Lo
   @Query("SELECT mm.user FROM MeetingMember mm WHERE mm.meeting.id = :meetingId AND mm.role IN (MEMBER, LEADER, CO_LEADER)")
   List<User> findMemberUsersByMeetingId(@Param("meetingId") Long meetingId);
 
+  @Query("SELECT mm.meeting FROM MeetingMember mm LEFT JOIN FETCH mm.meeting.thumbnailFiles WHERE mm.user.id = :userId")
+  List<Meeting> findAllMeetingsByUserId(@Param("userId") String userId);
+
   List<MeetingMember> findAllByMeetingId(Long meetingId);
   List<MeetingMember> findAllByUserId(String userId);
 

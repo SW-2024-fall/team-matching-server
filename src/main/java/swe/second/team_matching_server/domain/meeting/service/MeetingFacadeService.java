@@ -61,6 +61,11 @@ public class MeetingFacadeService {
     return meetings.map(meetingMapper::toMeetingElement);
   }
 
+  public List<MeetingElement> findAllByUserId(String userId) {
+    List<Meeting> meetings = meetingMemberService.findAllMeetingsByUserId(userId);
+    return meetings.stream().map(meetingMapper::toMeetingElement).collect(Collectors.toList());
+  }
+
   public MeetingResponse findById(Long meetingId, String userId) {
     Meeting meeting = meetingService.findByIdWithThumbnailFiles(meetingId);
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(meetingId);

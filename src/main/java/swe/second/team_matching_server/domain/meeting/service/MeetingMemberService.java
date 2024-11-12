@@ -37,6 +37,10 @@ public class MeetingMemberService {
         this.meetingRepository = meetingRepository;
     }
 
+    public List<Meeting> findAllMeetingsByUserId(String userId) {
+        return meetingMemberRepository.findAllMeetingsByUserId(userId);
+    }
+
     public MeetingMember findById(Long id) {
         return meetingMemberRepository.findById(id)
             .orElseThrow(() -> new MeetingMemberNotFoundException());
