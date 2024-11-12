@@ -28,7 +28,7 @@ public class MeetingInfo {
     private LocalTime startTime;
     private LocalTime endTime;
     private String location;
-    private int currentParticipant;
+    private int currentParticipants;
     private int minParticipant;
     private int maxParticipant;
     private String meta;

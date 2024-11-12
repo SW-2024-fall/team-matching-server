@@ -110,8 +110,10 @@ public class MeetingMemberService {
 
     @Transactional
     public MeetingMember create(Meeting meeting, User user, MeetingMemberRole role) {
-        meeting.updateCurrentParticipants(meeting.getCurrentParticipants() + 1);
-        meetingRepository.save(meeting);
+        if (role == MeetingMemberRole.LEADER || role == MeetingMemberRole.CO_LEADER || role == MeetingMemberRole.MEMBER) {
+            meeting.updateCurrentParticipants(meeting.getCurrentParticipants() + 1);
+            meetingRepository.save(meeting);
+        }
         MeetingMember meetingMember;
 
         try {
