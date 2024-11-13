@@ -1,48 +1,41 @@
 package swe.second.team_matching_server.core.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import swe.second.team_matching_server.core.auth.dto.TokenDto;
-import swe.second.team_matching_server.core.auth.dto.TokenRequestDto;
-import swe.second.team_matching_server.core.auth.dto.UserRequestDto;
-import swe.second.team_matching_server.core.auth.dto.UserResponseDto;
+import swe.second.team_matching_server.core.auth.dto.*;
 import swe.second.team_matching_server.core.auth.entity.RefreshToken;
 import swe.second.team_matching_server.core.auth.jwt.TokenProvider;
 import swe.second.team_matching_server.core.auth.repository.RefreshTokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import swe.second.team_matching_server.domain.user.model.entity.User;
-import swe.second.team_matching_server.domain.user.repository.UserRepository;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import swe.second.team_matching_server.domain.user.repository.UserRepository;
 
-
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final UserRepository userRepository;
+    private final UserRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public UserResponseDto signup(UserRequestDto memberRequestDto) {
-        if (userRepository.existsByEmail(memberRequestDto.getEmail())) {
+        if (memberRepository.existsByEmail(memberRequestDto.getEmail())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
         }
 
-        User user = userRequestDto.toUser(passwordEncoder);
-        return UserResponseDto.of(userRepository.save(user));
+        User member = memberRequestDto.toUser(passwordEncoder);
+        return UserResponseDto.of(memberRepository.save(member));
     }
 
     @Transactional
-    public TokenDto login(UserResponseDto memberRequestDto) {
+    public TokenDto login(UserRequestDto memberRequestDto) {
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
@@ -94,4 +87,20 @@ public class AuthService {
         // 토큰 발급
         return tokenDto;
     }
+
+    @Transactional
+    public void logout(LogoutRequestDto logoutRequestDto) {
+        // 1. Access Token 검증
+        if (!tokenProvider.validateToken(logoutRequestDto.getAccessToken())) {
+            throw new RuntimeException("Access Token 이 유효하지 않습니다.");
+        }
+
+        // 2. Access Token 에서 Authentication 정보 가져오기
+        var authentication = tokenProvider.getAuthentication(logoutRequestDto.getAccessToken());
+
+        // 3. Refresh Token 저장소에서 삭제
+        refreshTokenRepository.findByKey(authentication.getName())
+                .ifPresent(refreshTokenRepository::delete);
+    }
 }
+
