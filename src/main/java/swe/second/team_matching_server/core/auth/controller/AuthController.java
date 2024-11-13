@@ -3,10 +3,7 @@ package swe.second.team_matching_server.core.auth.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import swe.second.team_matching_server.core.auth.dto.TokenDto;
-import swe.second.team_matching_server.core.auth.dto.TokenRequestDto;
-import swe.second.team_matching_server.core.auth.dto.UserRequestDto;
-import swe.second.team_matching_server.core.auth.dto.UserResponseDto;
+import swe.second.team_matching_server.core.auth.dto.*;
 import swe.second.team_matching_server.core.auth.service.AuthService;
 
 @RestController
@@ -23,6 +20,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody UserRequestDto memberRequestDto) {
         return ResponseEntity.ok(authService.login(memberRequestDto));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequestDto logoutRequestDto) {
+        authService.logout(logoutRequestDto);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/reissue")
