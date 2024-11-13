@@ -2,6 +2,7 @@ package swe.second.team_matching_server.core.auth.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import swe.second.team_matching_server.domain.user.model.entity.User;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
 
 @Getter
@@ -13,8 +14,9 @@ public class UserResponseDto {
     private Major major;
     private String studentId;
     private String phoneNumber;
+    private String name;
 
-    public UserResponseDto(String id, String email, String username, Major major, String studentId, String phoneNumber) {
+    public UserResponseDto() {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -22,5 +24,12 @@ public class UserResponseDto {
         this.studentId = studentId;
         this.phoneNumber = phoneNumber;
     }
-}
 
+    public static UserResponseDto of(User member) {
+        UserResponseDto dto = new UserResponseDto();
+        dto.id = member.getId();
+        dto.email = member.getEmail();
+        dto.name = member.getName();
+        return dto;
+    }
+}
