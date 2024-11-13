@@ -15,29 +15,42 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.io.File;
 
 public class ContentAnalyzer {
     private static final String PROJECT_ID = "named-berm-382814";
     private static final String LOCATION = "us-central1";
+    private static final String MODEL_NAME = "gemini-1.5-flash-002"; // Add model name
     private static final ChatLanguageModel model;
-
-    static {
+    
+    private static void setGoogleCredentials() {
         try {
-            String credentialsPath = "C:/Users/kkms4641/named-berm-382814-d242aad5ed24.json";
+            // Use direct absolute path to credentials
+            String credentialsPath = "C:\\Users\\kkms4641\\named-berm-382814-d242aad5ed24.json";
             
-            System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", credentialsPath);
+            // Verify file exists
+            File credentialsFile = new File(credentialsPath);
+            if (!credentialsFile.exists()) {
+                throw new RuntimeException("Credentials file not found at: " + credentialsPath);
+            }
+            
+            // Set Google credentials property with normalized path
+            String normalizedPath = credentialsFile.getAbsolutePath();
+            System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", normalizedPath);
+            System.out.println("Set credentials path to: " + normalizedPath);
 
-            model = VertexAiGeminiChatModel.builder()
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set Google credentials: " + e.getMessage(), e);
+        }
+    }
+    
+    static {
+        setGoogleCredentials();
+        model = VertexAiGeminiChatModel.builder()
                 .project(PROJECT_ID)
                 .location(LOCATION)
-                .modelName("gemini-1.5-flash-002")
-                .build();   
-
-            
-       } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize Google credentials", e);
-        }
+                .modelName(MODEL_NAME)  // Add model name parameter
+                .build();
     }
 
     private static final String FEATURE_PROMPT = """
