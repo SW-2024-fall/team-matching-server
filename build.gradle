@@ -46,8 +46,9 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 	implementation 'dev.langchain4j:langchain4j-vertex-ai-gemini:0.33.0'
-	implementation 'dev.langchain4j:langchain4j:0.27.1'
-	implementation 'dev.langchain4j:langchain4j-vertex-ai:0.27.1'
+	implementation 'dev.langchain4j:langchain4j:0.33.0'
+	implementation 'dev.langchain4j:langchain4j-core:0.33.0'
+	implementation 'dev.langchain4j:langchain4j-vertex-ai:0.33.0'
 }
 
 tasks.named('test') {
