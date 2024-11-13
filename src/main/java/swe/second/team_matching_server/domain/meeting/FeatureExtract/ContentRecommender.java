@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
+import java.io.File;
 
 public class ContentRecommender {
     // Existing weights
@@ -181,5 +182,26 @@ public class ContentRecommender {
         }
         
         return baseScore;
+    }
+
+    private static void setGoogleCredentials() {
+        try {
+            // Get credentials path from environment variable
+            String credentialsPath = System.getenv("GOOGLE_CREDENTIALS_PATH");
+            if (credentialsPath == null || credentialsPath.isEmpty()) {
+                throw new RuntimeException("GOOGLE_CREDENTIALS_PATH environment variable not set");
+            }
+            
+            File credentialsFile = new File(credentialsPath);
+            if (!credentialsFile.exists()) {
+                throw new RuntimeException("Credentials file not found at: " + credentialsPath);
+            }
+            
+            System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", credentialsPath);
+            System.out.println("Set credentials path to: " + credentialsPath);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set Google credentials: " + e.getMessage(), e);
+        }
     }
 }
