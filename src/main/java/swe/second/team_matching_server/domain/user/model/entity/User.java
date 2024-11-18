@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import swe.second.team_matching_server.common.entity.Base;
+import swe.second.team_matching_server.core.auth.entity.Authority;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
@@ -82,6 +83,15 @@ public class User extends Base{
     @Builder.Default
     private List<MeetingMember> meetings = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
+
+    public User(String email, String password, Authority authority){
+        this.email = email;
+        this.password = password;
+        this.authority = authority;
+    }
+
     public void updateAttendanceScore(byte attendanceScore) {
         this.attendanceScore = attendanceScore;
     }
@@ -96,5 +106,20 @@ public class User extends Base{
 
     public void removeFeatures(List<String> features) {
         this.features.removeAll(features);
+    }
+
+    public Object getAuthorities() {
+        return authority;
+    }
+
+    public String getName() {
+        return username;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.features.clear();
+        if (categories != null) {
+            this.features.addAll(categories);
+        }
     }
 }
