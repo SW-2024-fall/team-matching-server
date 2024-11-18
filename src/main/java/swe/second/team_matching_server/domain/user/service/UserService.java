@@ -11,10 +11,10 @@ import swe.second.team_matching_server.core.auth.jwt.TokenProvider;
 import swe.second.team_matching_server.domain.file.model.dto.FileCreateDto;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.file.service.FileService;
-import swe.second.team_matching_server.domain.user.model.dto.ProfileResponseDto;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 import swe.second.team_matching_server.domain.user.model.exception.UserNotFoundException;
 import swe.second.team_matching_server.domain.user.repository.UserRepository;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public UserResponseDto getMyProfile(String accessToken) {
         // Validate the access token
         if (!tokenProvider.validateToken(accessToken)) {
@@ -46,19 +46,25 @@ public class UserService {
         Authentication authentication = tokenProvider.getAuthentication(accessToken);
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found."));
+                .orElseThrow(() -> new RuntimeException("Email not found."));
         return UserResponseDto.of(user);
     }
 
     @Transactional(readOnly = true)
-    public ProfileResponseDto getUserProfile(String userId) {
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found."));
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponseDto getUserProfile(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found."));
-        return ProfileResponseDto.of(user);
+        return UserResponseDto.of(user);
     }
 
     @Transactional
-    public UserResponseDto updateUser(String accessToken, MultipartFile file, List<String> categories) {
+    public UserResponseDto updateUser(String accessToken, MultipartFile file, List<MeetingCategory> categories) {
         // Access Token 유효성 검증
         if (!tokenProvider.validateToken(accessToken)) {
             throw new RuntimeException("Invalid Access Token.");

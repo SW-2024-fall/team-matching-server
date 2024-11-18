@@ -37,6 +37,12 @@ public class FileService {
         .orElseThrow(() -> new RuntimeException("File not found"));
   }
 
+  @Transactional(readOnly = true)
+  public File findDefaultProfileImage() {
+    return fileRepository.findById("ed7eee25-0b03-4789-9e48-1a7226eb5850")
+        .orElseThrow(() -> new RuntimeException("Default profile image not found"));
+  }
+
   @Transactional
   public List<File> updateAll(List<File> existingFiles, List<FileCreateDto> updatedFileCreateDtos) {
     existingFiles.forEach(this::delete);

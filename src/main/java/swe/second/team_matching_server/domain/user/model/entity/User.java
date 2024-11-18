@@ -1,5 +1,6 @@
 package swe.second.team_matching_server.domain.user.model.entity;
 
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import swe.second.team_matching_server.core.auth.entity.Authority;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 
 @Getter
 @Entity
@@ -84,7 +86,8 @@ public class User extends Base{
     private List<MeetingMember> meetings = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private Authority authority;
+    @Builder.Default
+    private Authority authority = Authority.ROLE_USER;
 
     public User(String email, String password, Authority authority){
         this.email = email;
@@ -116,10 +119,12 @@ public class User extends Base{
         return username;
     }
 
-    public void setCategories(List<String> categories) {
-        this.features.clear();
-        if (categories != null) {
-            this.features.addAll(categories);
+    public void setCategories(List<MeetingCategory> categories) {
+        if (categories == null) {
+            return;
         }
+
+        this.features.clear();
+        this.features.addAll(categories.stream().map(MeetingCategory::getCategory).collect(Collectors.toList()));
     }
 }

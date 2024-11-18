@@ -66,6 +66,11 @@ public class HistoryService {
         this.attendanceHistoryService = attendanceHistoryService;
     }
 
+    public Page<HistoryElement> findAllByUserEmail(Pageable pageable, String userEmail) {
+        User user = userService.findByEmail(userEmail);
+        return findAllByUserId(pageable, user.getId());
+    }
+
     public Page<HistoryElement> findAllByUserId(Pageable pageable, String userId) {
         int attendanceCount = attendanceHistoryService.countAllByUserId(userId);
         List<AttendanceHistory> attendanceHistories 
@@ -76,6 +81,11 @@ public class HistoryService {
             .collect(Collectors.toList());
 
         return new PageImpl<>(histories, pageable, attendanceCount);
+    }
+
+    public Page<HistoryElement> findAllByMeetingIdAndUserEmail(Pageable pageable, Long meetingId, String userEmail) {
+        User user = userService.findByEmail(userEmail);
+        return findAllByMeetingId(pageable, meetingId, user.getId());
     }
 
     public Page<HistoryElement> findAllByMeetingId(Pageable pageable, Long meetingId, String userId) {
@@ -89,6 +99,11 @@ public class HistoryService {
             .map(history -> historyMapper.toHistoryElement(history));
     }
 
+    public HistoryResponse findByIdAndUserEmail(Long historyId, String userEmail) {
+        User user = userService.findByEmail(userEmail);
+        return findById(historyId, user.getId());
+    }
+
     public HistoryResponse findById(Long historyId, String userId) {
         List<AttendanceHistory> attendanceHistories = attendanceHistoryService.findAllByHistoryId(historyId);
         History history = historyRepository.findById(historyId)
@@ -98,6 +113,11 @@ public class HistoryService {
             throw new HistoryNoAccessException();
         }
         return historyMapper.toHistoryResponse(history, attendanceHistories);
+    }
+
+    public HistoryResponse saveWithUserEmail(HistoryCreateDto historyCreateDto, List<MultipartFile> files, String userEmail) {
+        User user = userService.findByEmail(userEmail);
+        return save(historyCreateDto, files, user.getId());
     }
 
     @Transactional
@@ -133,6 +153,11 @@ public class HistoryService {
         savedHistory.updateAttendanceHistories(attendanceHistories);
 
         return historyMapper.toHistoryResponse(savedHistory, attendanceHistories);
+    }
+
+    public HistoryResponse updateWithUserEmail(Long historyId, HistoryUpdateDto historyUpdateDto, List<MultipartFile> files, String userEmail) {
+        User user = userService.findByEmail(userEmail);
+        return update(historyId, historyUpdateDto, files, user.getId());
     }
 
     @Transactional
@@ -173,6 +198,11 @@ public class HistoryService {
         History updatedHistory = historyRepository.save(history);
 
         return historyMapper.toHistoryResponse(updatedHistory, attendanceHistories);
+    }
+
+    public void deleteWithUserEmail(Long historyId, String userEmail) {
+        User user = userService.findByEmail(userEmail);
+        delete(historyId, user.getId());
     }
 
     @Transactional

@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import swe.second.team_matching_server.domain.user.repository.UserRepository;
-
+import swe.second.team_matching_server.domain.file.service.FileService;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +23,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final FileService fileService;
 
     @Transactional
     public UserResponseDto signup(UserRequestDto memberRequestDto) {
@@ -30,14 +31,17 @@ public class AuthService {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
         }
 
+        if (memberRequestDto.getProfileImage() == null) {
+            memberRequestDto.setProfileImage(fileService.findDefaultProfileImage());
+        }
         User member = memberRequestDto.toUser(passwordEncoder);
         return UserResponseDto.of(memberRepository.save(member));
     }
 
     @Transactional
-    public TokenDto login(UserRequestDto memberRequestDto) {
+    public TokenDto login(LoginDto loginDto) {
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
-        UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken = loginDto.toAuthentication();
 
         // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
         //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨

@@ -12,7 +12,7 @@ public class UserMapper {
             .id(user.getId())
             .name(user.getUsername())
             .profileUrl(user.getProfileImage() != null ? user.getProfileImage().getUrl() : null)
-            .attendenceScore(user.getAttendanceScore())
+            .attendanceScore(user.getAttendanceScore())
             .major(user.getMajor())
             .studentId(user.getStudentId())
             .phoneNumber(user.getPhoneNumber())
