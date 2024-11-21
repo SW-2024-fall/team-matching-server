@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -114,6 +115,9 @@ public class TokenProvider {
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
         // 4. Authentication 객체 반환
-        return new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return authentication;
     }
 }
