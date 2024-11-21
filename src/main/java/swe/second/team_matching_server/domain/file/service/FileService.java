@@ -1,5 +1,6 @@
 package swe.second.team_matching_server.domain.file.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class FileService {
   @Value("${cloud.aws.s3.bucket}")
   private String bucket;
 
+  @Autowired
   public FileService(FileRepository fileRepository, AmazonS3 amazonS3) {
     this.fileRepository = fileRepository;
     this.amazonS3 = amazonS3;
