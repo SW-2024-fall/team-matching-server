@@ -30,6 +30,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import lombok.extern.slf4j.Slf4j;
+import swe.second.team_matching_server.domain.user.service.UserService;
 
 @Slf4j
 @Tag(name = "History", description = "모임 활동 내역 API")
@@ -37,15 +38,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/histories")
 public class HistoryController {
     private final HistoryService historyService;
+    private final UserService userService;
     
-    public HistoryController(HistoryService historyService) {
+    public HistoryController(HistoryService historyService, UserService userService) {
         this.historyService = historyService;
+        this.userService = userService;
     }
 
     @GetMapping
     @Operation(summary = "유저의 활동내역 조회 (메인 피드)", description = "유저의 활동내역을 조회합니다.")
     public ApiResponse<List<HistoryElement>> findAll(Pageable pageable, @AuthenticationPrincipal UserDetails userDetails) {
-        String userEmail = userDetails.getUsername();
+        String uuid = userDetails.getUsername();
+        String userEmail = userService.findEmailByID(uuid);
         log.info("userEmail: {}", userEmail);
 
         return ApiResponse.success(historyService.findAllByUserEmail(pageable, userEmail));
@@ -54,7 +58,8 @@ public class HistoryController {
     @GetMapping("/{historyId}")
     @Operation(summary = "활동내역 상세 조회", description = "활동내역을 상세 조회합니다.")
     public ApiResponse<HistoryResponse> getHistoryById(@PathVariable Long historyId, @AuthenticationPrincipal UserDetails userDetails) {
-        String userEmail = userDetails.getUsername();
+        String uuid = userDetails.getUsername();
+        String userEmail = userService.findEmailByID(uuid);
 
         return ApiResponse.success(historyService.findByIdAndUserEmail(historyId, userEmail));
     }
@@ -68,7 +73,8 @@ public class HistoryController {
     public ApiResponse<HistoryResponse> save(@RequestPart HistoryCreateDto history, 
         @RequestParam(value = "files", required = false) List<MultipartFile> files,
         @AuthenticationPrincipal UserDetails userDetails) {
-        String userEmail = userDetails.getUsername();
+        String uuid = userDetails.getUsername();
+        String userEmail = userService.findEmailByID(uuid);
 
         if (files != null && files.size() > 5) {
             throw new FileMaxCountExceededException();
@@ -87,7 +93,8 @@ public class HistoryController {
         @RequestPart HistoryUpdateDto history,
         @RequestParam(value = "files", required = false) List<MultipartFile> files,
         @AuthenticationPrincipal UserDetails userDetails) {
-        String userEmail = userDetails.getUsername();
+        String uuid = userDetails.getUsername();
+        String userEmail = userService.findEmailByID(uuid);
 
         if (files != null && files.size() > 5) {
             throw new FileMaxCountExceededException();
@@ -99,7 +106,8 @@ public class HistoryController {
     @DeleteMapping("/{historyId}")
     @Operation(summary = "활동내역 삭제", description = "활동내역을 삭제합니다. (리더/부리더만 가능)")
     public ApiResponse<?> delete(@PathVariable Long historyId, @AuthenticationPrincipal UserDetails userDetails) {
-        String userEmail = userDetails.getUsername();
+        String uuid = userDetails.getUsername();
+        String userEmail = userService.findEmailByID(uuid);
 
         historyService.deleteWithUserEmail(historyId, userEmail);
         return ApiResponse.success();
