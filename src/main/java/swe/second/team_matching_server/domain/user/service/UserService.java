@@ -32,6 +32,13 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    @Transactional(readOnly = true)
+    public String findEmailByID(String userId) {
+        return userRepository.findById(userId)
+                .map(User::getEmail) // User 엔티티에서 이메일 가져오기
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID에 해당하는 사용자가 없습니다."));
+    }
+
     @Transactional
     public User save(User user) {
         return userRepository.save(user);
