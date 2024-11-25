@@ -22,6 +22,7 @@ import swe.second.team_matching_server.domain.auth.model.entity.Refresh;
 import swe.second.team_matching_server.domain.user.service.UserService;
 import swe.second.team_matching_server.domain.auth.model.dto.RefreshRequest;
 import swe.second.team_matching_server.domain.auth.model.dto.LoginRequest;
+import swe.second.team_matching_server.domain.auth.model.exception.WrongPasswordException;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +61,7 @@ public class AuthService {
     public TokenResponse login(LoginRequest loginRequest) {
         User user = userService.findByEmail(loginRequest.getEmail());
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+            throw new WrongPasswordException();
         }
 
         return createToken(user.getId());
