@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 @Transactional(readOnly = true)
 @Service
 public class CommentService {
@@ -80,9 +77,11 @@ public class CommentService {
     commentRepository.save(comment);
   }
 
-  public Page<MeetingElement> findAllByUserId(String userId, Pageable pageable) {
-    Page<Meeting> meetings = commentRepository.findMeetingsByUserId(userId, pageable);
-    return meetings.map(meetingMapper::toMeetingElement);
+  public List<MeetingElement> findAllByUserId(String userId) {
+    List<Meeting> meetings = commentRepository.findMeetingsByUserId(userId);
+    return meetings.stream()
+      .map(meetingMapper::toMeetingElement)
+      .collect(Collectors.toList());
   }
 
 }

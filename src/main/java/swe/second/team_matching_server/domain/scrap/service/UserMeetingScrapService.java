@@ -1,5 +1,8 @@
 package swe.second.team_matching_server.domain.scrap.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +14,6 @@ import swe.second.team_matching_server.domain.meeting.service.MeetingService;
 import swe.second.team_matching_server.domain.user.service.UserService;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
 import swe.second.team_matching_server.domain.meeting.model.mapper.MeetingMapper;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional(readOnly = true)
@@ -68,9 +68,11 @@ public class UserMeetingScrapService {
         delete(meeting, user);
     }
 
-    public Page<MeetingElement> findAllByUserId(String userId, Pageable pageable) {
-        Page<Meeting> meetings = userMeetingScrapRepository.findMeetingsByUserId(userId, pageable);
+    public List<MeetingElement> findAllByUserId(String userId) {
+        List<Meeting> meetings = userMeetingScrapRepository.findMeetingsByUserId(userId);
 
-        return meetings.map(meetingMapper::toMeetingElement);
+        return meetings.stream()
+            .map(meetingMapper::toMeetingElement)
+            .collect(Collectors.toList());
     }
 }

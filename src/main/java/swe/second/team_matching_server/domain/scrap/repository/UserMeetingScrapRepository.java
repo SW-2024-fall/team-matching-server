@@ -8,9 +8,6 @@ import swe.second.team_matching_server.domain.scrap.model.entity.UserMeetingScra
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 @Repository
@@ -26,5 +23,5 @@ public interface UserMeetingScrapRepository extends JpaRepository<UserMeetingScr
   boolean existsByUserIdAndMeetingId(String userId, Long meetingId);
 
   @Query("SELECT ums.meeting FROM UserMeetingScrap ums WHERE ums.user.id = :userId")
-  Page<Meeting> findMeetingsByUserId(@Param("userId") String userId, Pageable pageable);
+  List<Meeting> findMeetingsByUserId(@Param("userId") String userId);
 }

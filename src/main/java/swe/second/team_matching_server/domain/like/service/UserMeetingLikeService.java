@@ -1,5 +1,8 @@
 package swe.second.team_matching_server.domain.like.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import swe.second.team_matching_server.domain.like.repository.UserMeetingLikeRepository;
@@ -10,9 +13,6 @@ import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
 import swe.second.team_matching_server.domain.meeting.model.mapper.MeetingMapper;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -42,8 +42,10 @@ public class UserMeetingLikeService {
             .build());
     }
 
-    public Page<MeetingElement> findAllByUserId(User user, Pageable pageable) {
-        Page<Meeting> meetings = userMeetingLikeRepository.findMeetingsByUserId(user.getId(), pageable);
-        return meetings.map(meetingMapper::toMeetingElement);
+    public List<MeetingElement> findAllByUserId(String userId) {
+        List<Meeting> meetings = userMeetingLikeRepository.findMeetingsByUserId(userId);
+        return meetings.stream()
+            .map(meetingMapper::toMeetingElement)
+            .collect(Collectors.toList());
     }
 }
