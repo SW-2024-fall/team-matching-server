@@ -23,6 +23,7 @@ import swe.second.team_matching_server.domain.user.service.UserService;
 import swe.second.team_matching_server.domain.auth.model.dto.RefreshRequest;
 import swe.second.team_matching_server.domain.auth.model.dto.LoginRequest;
 import swe.second.team_matching_server.domain.auth.model.exception.WrongPasswordException;
+import swe.second.team_matching_server.domain.auth.model.exception.RefreshTokenNofoundExeption;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +53,7 @@ public class AuthService {
         String userId = jwtProvider.getUserId(refreshRequest.getRefreshToken());
 
         if (!refreshRepository.existsByUserId(userId)) {
-            throw new RuntimeException("Refresh token not found");
+            throw new RefreshTokenNofoundExeption();
         }
 
         return createToken(userId);
