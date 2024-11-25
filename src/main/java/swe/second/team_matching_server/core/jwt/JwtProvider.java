@@ -7,6 +7,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import swe.second.team_matching_server.domain.auth.model.dto.TokenResponse;
@@ -15,6 +20,7 @@ import swe.second.team_matching_server.domain.auth.model.exception.IllegalArgume
 import swe.second.team_matching_server.domain.auth.model.exception.InvalidSignatureException;
 import swe.second.team_matching_server.domain.auth.model.exception.InvalidTokenException;
 import swe.second.team_matching_server.domain.auth.model.exception.UnsupportedTokenException;
+import swe.second.team_matching_server.domain.auth.model.enums.UserRole;
 
 @Component
 public class JwtProvider {
@@ -59,7 +65,13 @@ public class JwtProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        return null;
+        String userId = getUserId(token);
+        UserDetails userDetails = User.withUsername(userId)
+                .password("")
+                .authorities(UserRole.USER.getRole())
+                .build();
+
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     public boolean validateToken(String token) {
