@@ -116,16 +116,18 @@ public class HistoryService {
             throw new HistoryInvalidAttendanceHistoryException();
         }
 
+        User user = userService.findById(userId);
+        History history = historyRepository.save(historyMapper.toHistory(historyCreateDto, user, meeting, new ArrayList<>()));
+        
         List<FileCreateDto> fileCreateDtos = files == null ? new ArrayList<>()
             : files.stream().map(file -> FileCreateDto.builder()
             .file(file)
             .folder(FileFolder.HISTORY)
+            .history(history)
             .build())
             .collect(Collectors.toList());
-
-        User user = userService.findById(userId);
         List<File> photos = fileService.saveAll(fileCreateDtos);
-        History history = historyMapper.toHistory(historyCreateDto, user, meeting, photos);
+        history.updatePhotos(photos);
 
         History savedHistory = historyRepository.save(history);
 

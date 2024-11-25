@@ -19,7 +19,10 @@ public interface UserMeetingLikeRepository extends JpaRepository<UserMeetingLike
   @Query("SELECT ums.user FROM UserMeetingLike ums WHERE ums.meeting.id = :meetingId")
   List<User> findLikedUsersByMeetingId(@Param("meetingId") Long meetingId);
 
-  long countByMeetingId(Long meetingId);
+  int countByMeetingId(Long meetingId);
 
   boolean existsByUserIdAndMeetingId(String userId, Long meetingId);
+
+  @Query("SELECT ums.meeting FROM UserMeetingLike ums WHERE ums.user.id = :userId")
+  List<Meeting> findMeetingsByUserId(@Param("userId") String userId);
 }

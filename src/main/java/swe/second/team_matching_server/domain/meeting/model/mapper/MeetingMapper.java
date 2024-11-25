@@ -81,6 +81,11 @@ public class MeetingMapper {
             .endTime(meeting.getEndTime())
             .meta(meeting.getMeta())
             .applicationMethod(meeting.getApplicationMethod())
+            .currentParticipants(meeting.getCurrentParticipants())
+            .likes(meeting.getLikeCount())
+            .comments(meeting.getCommentCount())
+            .scraps(meeting.getScrapCount())
+            .days(meeting.getDays())
             .build();
     }
 

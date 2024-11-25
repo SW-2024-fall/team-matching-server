@@ -2,8 +2,11 @@ package swe.second.team_matching_server.domain.user.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.annotations.Filter;
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,6 +33,7 @@ import lombok.ToString;
 import swe.second.team_matching_server.common.entity.Base;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
+import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
 
 @Getter
@@ -69,6 +73,9 @@ public class User extends Base{
     @Builder.Default
     private byte attendanceScore = 80;
 
+    @Builder.Default
+    private Set<MeetingCategory> preferredCategories = new HashSet<>();
+
     // service에서 저장 시 기본 이미지 저장 필요
     @OneToOne
     @JoinColumn(name = "profile_image_id", nullable = false)
@@ -81,6 +88,10 @@ public class User extends Base{
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<MeetingMember> meetings = new ArrayList<>();
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 
     public void updateAttendanceScore(byte attendanceScore) {
         this.attendanceScore = attendanceScore;
@@ -96,5 +107,9 @@ public class User extends Base{
 
     public void removeFeatures(List<String> features) {
         this.features.removeAll(features);
+    }
+
+    public void updatePreferredCategories(Set<MeetingCategory> preferredCategories) {
+        this.preferredCategories = preferredCategories;
     }
 }

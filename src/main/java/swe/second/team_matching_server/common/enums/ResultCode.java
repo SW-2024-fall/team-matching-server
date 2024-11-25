@@ -27,6 +27,15 @@ public enum ResultCode {
 
   // user
   USER_NOT_FOUND("해당 유저가 존재하지 않습니다."),
+      
+  // auth
+  REFRESH_TOKEN_NOT_FOUND("리프레시 토큰이 존재하지 않습니다."),
+  WRONG_PASSWORD("비밀번호가 일치하지 않습니다."),
+  INVALID_TOKEN("유효하지 않은 토큰입니다."),
+  EXPIRED_TOKEN("만료된 토큰입니다."),
+  INVALID_SIGNATURE("서명 검증 실패"),
+  UNSUPPORTED_TOKEN("지원하지 않는 토큰입니다."),
+  ILLEGAL_ARGUMENT_TOKEN("토큰이 비어있거나 잘못되었습니다."),
 
   // file
   FILE_NOT_FOUND("해당 파일이 존재하지 않습니다."),
@@ -37,7 +46,10 @@ public enum ResultCode {
   HISTORY_NO_ACCESS("해당 히스토리에 접근할 권한이 없습니다."),
   HISTORY_NO_PERMISSION("히스토리 생성 및 수정/삭제는 리더 및 부리더만 가능합니다."),
   HISTORY_NOT_FOUND("해당 히스토리가 존재하지 않습니다."),
-  HISTORY_INVALID_ATTENDANCE_HISTORY("모든 멤버가 출석 히스토리를 가지고 있어야 합니다.");
+  HISTORY_INVALID_ATTENDANCE_HISTORY("모든 멤버가 출석 히스토리를 가지고 있어야 합니다."),
+
+  // comment
+  COMMENT_NOT_FOUND("해당 댓글이 존재하지 않습니다.");
 
   private final String message;
 

@@ -136,10 +136,16 @@ public class Meeting extends Base {
     private int currentParticipants = 0;
 
     @Transient
-    private int likeCount;
+    @Builder.Default
+    private int likeCount = 0;
 
     @Transient
-    private int commentCount;
+    @Builder.Default
+    private int commentCount = 0;
+
+    @Transient
+    @Builder.Default
+    private int scrapCount = 0;
 
     public void updateThumbnailFiles(List<File> thumbnailFiles) {
         this.thumbnailFiles = thumbnailFiles;
@@ -216,5 +222,9 @@ public class Meeting extends Base {
 
     public void setCommentCount(int commentCount) {
         this.commentCount = commentCount;
+    }
+
+    public void setScrapCount(int scrapCount) {
+        this.scrapCount = scrapCount;
     }
 }

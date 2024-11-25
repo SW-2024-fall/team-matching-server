@@ -19,7 +19,12 @@ import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMembers;
 import swe.second.team_matching_server.common.enums.FileFolder;
-
+import swe.second.team_matching_server.domain.like.service.UserMeetingLikeService;
+import swe.second.team_matching_server.domain.scrap.service.UserMeetingScrapService;
+import swe.second.team_matching_server.domain.comment.service.CommentService;
+import swe.second.team_matching_server.domain.comment.model.dto.CommentResponse;
+import swe.second.team_matching_server.domain.user.service.UserService;
+import swe.second.team_matching_server.domain.user.model.entity.User;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -27,30 +32,38 @@ import java.util.ArrayList;
 @Service
 public class MeetingFacadeService {
   private final MeetingService meetingService;
-  private final MeetingCommentService meetingCommentService;
-  private final MeetingScrapService meetingScrapService;
-  private final MeetingLikeService meetingLikeService;
+  private final CommentService commentService;
+  private final UserMeetingScrapService userMeetingScrapService;
+  private final UserMeetingLikeService userMeetingLikeService;
   private final MeetingMemberService meetingMemberService;
   private final MeetingMapper meetingMapper;
+  private final UserService userService;
 
   public MeetingFacadeService(
-    MeetingService meetingService, 
-    MeetingCommentService meetingCommentService, 
-    MeetingScrapService meetingScrapService, 
-    MeetingLikeService meetingLikeService, 
+    MeetingService meetingService,  
+    CommentService commentService, 
+    UserMeetingScrapService userMeetingScrapService, 
+    UserMeetingLikeService userMeetingLikeService,
     MeetingMemberService meetingMemberService, 
-    MeetingMapper meetingMapper) {
+    MeetingMapper meetingMapper,
+    UserService userService) {
     this.meetingService = meetingService;
-    this.meetingCommentService = meetingCommentService;
-    this.meetingScrapService = meetingScrapService;
-    this.meetingLikeService = meetingLikeService;
+    this.commentService = commentService;
+    this.userMeetingScrapService = userMeetingScrapService;
+    this.userMeetingLikeService = userMeetingLikeService;
     this.meetingMemberService = meetingMemberService;
     this.meetingMapper = meetingMapper;
+    this.userService = userService;
   }
 
   public Page<MeetingElement> findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
     Page<Meeting> meetings = meetingService.findAllWithConditions(pageable, categories, type, min, max);
     return meetings.map(meetingMapper::toMeetingElement);
+  }
+
+  public List<MeetingElement> findAllByUserId(String userId) {
+    List<Meeting> meetings = meetingMemberService.findAllMeetingsByUserId(userId);
+    return meetings.stream().map(meetingMapper::toMeetingElement).collect(Collectors.toList());
   }
 
   public MeetingResponse findById(Long meetingId, String userId) {
@@ -63,9 +76,22 @@ public class MeetingFacadeService {
         .collect(Collectors.toList());
     }
 
+    int likes = userMeetingLikeService.countByMeetingId(meetingId);
+    int comments = commentService.countByMeetingId(meetingId);
+    int scraps = userMeetingScrapService.countByMeetingId(meetingId);
+    boolean isLiked = userMeetingLikeService.isLiked(userId, meetingId);
+    boolean isScraped = userMeetingScrapService.isScraped(userId, meetingId);
+    List<CommentResponse> commentResponses = commentService.findAllByMeetingId(meetingId);
+
+    meeting.setLikeCount(likes);
+    meeting.setCommentCount(comments);
+    meeting.setScrapCount(scraps);
+
     MeetingResponse meetingResponse = meetingMapper.toResponse(meeting, members, isExecutive);
     meetingResponse.setUserRole(meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId));
-
+    meetingResponse.setComments(commentResponses);
+    meetingResponse.setLiked(isLiked);
+    meetingResponse.setScraped(isScraped);
     return meetingResponse;
   }
 
@@ -80,7 +106,6 @@ public class MeetingFacadeService {
 
     Meeting meeting = meetingMapper.toEntity(meetingCreateDto);
     Meeting savedMeeting = meetingService.create(fileCreateDtos, meeting, userId);
-
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(savedMeeting.getId());
 
     MeetingResponse meetingResponse = meetingMapper.toResponse(savedMeeting, members, true);
@@ -99,9 +124,15 @@ public class MeetingFacadeService {
 
     Meeting updatedMeeting = meetingService.update(meetingId, fileCreateDtos, meetingUpdateDto, userId);
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(updatedMeeting.getId());
+    boolean isLiked = userMeetingLikeService.isLiked(userId, meetingId);
+    boolean isScraped = userMeetingScrapService.isScraped(userId, meetingId);
+    List<CommentResponse> commentResponses = commentService.findAllByMeetingId(meetingId);
 
     MeetingResponse meetingResponse = meetingMapper.toResponse(updatedMeeting, members, true);
     meetingResponse.setUserRole(meetingMemberService.findRoleByMeetingIdAndUserId(meetingId, userId));
+    meetingResponse.setLiked(isLiked);
+    meetingResponse.setScraped(isScraped);
+    meetingResponse.setComments(commentResponses);
     return meetingResponse;
   }
 
@@ -174,5 +205,19 @@ public class MeetingFacadeService {
     Meeting meeting = meetingService.findById(meetingId);
 
     return meetingMapper.toMeetingMembers(meetingMemberService.downgradeToMember(userId, meeting, targetUserId), true);
+  }
+
+  public void likeMeeting(Long meetingId, String userId) {
+    Meeting meeting = meetingService.findById(meetingId);
+    User user = userService.findById(userId);
+
+    userMeetingLikeService.save(meeting, user);
+  }
+
+  public void unlikeMeeting(Long meetingId, String userId) {
+    Meeting meeting = meetingService.findById(meetingId);
+    User user = userService.findById(userId);
+
+    userMeetingLikeService.delete(meeting, user);
   }
 }

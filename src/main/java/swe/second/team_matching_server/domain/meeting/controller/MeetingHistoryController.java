@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import swe.second.team_matching_server.common.dto.ApiResponse;
 import swe.second.team_matching_server.domain.history.model.dto.HistoryElement;
@@ -28,9 +30,9 @@ public class MeetingHistoryController {
     @GetMapping
     @Operation(summary = "모임 활동내역 조회", description = "모임 활동내역을 조회합니다.")
     public ApiResponse<List<HistoryElement>> findAllByMeetingId(
-        @PathVariable Long meetingId, Pageable pageable) {
-        // 추후 token에서 user 정보를 가져오도록 수정해야함
-        String userId = "test";
+            @PathVariable Long meetingId, Pageable pageable,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
 
         return ApiResponse.success(historyService.findAllByMeetingId(pageable, meetingId, userId));
     }
