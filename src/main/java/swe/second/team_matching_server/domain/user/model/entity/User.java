@@ -82,6 +82,10 @@ public class User extends Base{
     @Builder.Default
     private List<MeetingMember> meetings = new ArrayList<>();
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
     public void updateAttendanceScore(byte attendanceScore) {
         this.attendanceScore = attendanceScore;
     }
