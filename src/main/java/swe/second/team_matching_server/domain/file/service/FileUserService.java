@@ -1,5 +1,6 @@
 package swe.second.team_matching_server.domain.file.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,22 +14,28 @@ import swe.second.team_matching_server.domain.file.model.exception.FileNotFoundE
 public class FileUserService {
   private final FileRepository fileRepository;
   private final FileService fileService;
-  // private final File defaultProfileImage;
 
+  @Value("${user.default.profile.image.id}")
+  private String defaultProfileImageId;
+  
   public FileUserService(FileRepository fileRepository, FileService fileService) {
     this.fileRepository = fileRepository;
     this.fileService = fileService;
-    // this.defaultProfileImage = fileRepository.findById("ed7eee25-0b03-4789-9e48-1a7226eb5850")
-        // .orElseThrow(FileNotFoundException::new);
-        // .orElse(null);
   }
 
-  // public File getDefaultProfileImage() {
-  //   return defaultProfileImage;
-  // }
+  public File getDefaultProfileImage() {
+    return fileRepository.findById(defaultProfileImageId)
+        .orElseThrow(FileNotFoundException::new);
+  }
 
   public File findByUserId(String userId) {
     return fileRepository.findByUserId(userId).orElseThrow(FileNotFoundException::new);
+  }
+
+  @Transactional
+  public File saveProfileImage(FileCreateDto fileCreateDto) {
+    fileCreateDto.setFolder(FileFolder.USER);
+    return fileService.save(fileCreateDto);
   }
 
   @Transactional

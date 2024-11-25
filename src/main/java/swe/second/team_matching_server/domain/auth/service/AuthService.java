@@ -73,7 +73,7 @@ public class AuthService {
 
         File profileImage;
         if (profileImageFile != null) {
-            profileImage = fileUserService.create(fileCreateDto);
+            profileImage = fileUserService.saveProfileImage(fileCreateDto);
         } else {
             profileImage = fileUserService.getDefaultProfileImage();
         }
