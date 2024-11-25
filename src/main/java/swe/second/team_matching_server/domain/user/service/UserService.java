@@ -17,8 +17,11 @@ public class UserService {
     }
 
     public User findById(String userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException());
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
+    }
+    
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
     }
 
     @Transactional
