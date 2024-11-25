@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import swe.second.team_matching_server.common.dto.ApiResponse;
-
 
 @RestController
 @RequestMapping("/api/meetings/{meetingId}/scraps")
@@ -21,18 +22,18 @@ public class MeetingScrapController {
     }
 
     @PostMapping
-    public ApiResponse<Void> scrapMeeting(@PathVariable Long meetingId) {
-        // 후에 인증 추가 필요
-        String userId = "test";
+    public ApiResponse<Void> scrapMeeting(
+        @PathVariable Long meetingId, @AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
 
         userMeetingScrapService.save(meetingId, userId);
         return ApiResponse.success();
     }
 
     @DeleteMapping
-    public ApiResponse<Void> unscrapMeeting(@PathVariable Long meetingId) {
-        // 후에 인증 추가 필요
-        String userId = "test";
+    public ApiResponse<Void> unscrapMeeting(
+        @PathVariable Long meetingId, @AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
 
         userMeetingScrapService.delete(meetingId, userId);
         return ApiResponse.success();

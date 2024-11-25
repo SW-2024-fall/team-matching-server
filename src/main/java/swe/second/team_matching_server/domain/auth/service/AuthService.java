@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import swe.second.team_matching_server.domain.auth.model.dto.RegisterRequest;
+import swe.second.team_matching_server.domain.auth.model.dto.SignupRequest;
 import swe.second.team_matching_server.domain.auth.model.dto.TokenResponse;
 import swe.second.team_matching_server.domain.auth.repository.RefreshRepository;
 import swe.second.team_matching_server.domain.file.model.dto.FileCreateDto;
@@ -69,18 +69,17 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse register(RegisterRequest registerRequest, MultipartFile profileImageFile) {
-        FileCreateDto fileCreateDto =
-                FileCreateDto.builder().file(profileImageFile).folder(FileFolder.USER).build();
-
+    public TokenResponse signup(SignupRequest signupRequest, MultipartFile profileImageFile) {
         File profileImage;
         if (profileImageFile != null) {
+            FileCreateDto fileCreateDto =
+                    FileCreateDto.builder().file(profileImageFile).folder(FileFolder.USER).build();
             profileImage = fileUserService.saveProfileImage(fileCreateDto);
         } else {
             profileImage = fileUserService.getDefaultProfileImage();
         }
 
-        User user = UserMapper.toEntity(registerRequest, profileImage);
+        User user = UserMapper.toEntity(signupRequest, profileImage);
         user.updatePassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
 

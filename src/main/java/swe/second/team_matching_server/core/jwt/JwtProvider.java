@@ -73,22 +73,22 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
-        try {
+        // try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
             return true;
-        } catch (ExpiredJwtException e) {
-            throw new ExpiredTokenException();
-        } catch (io.jsonwebtoken.MalformedJwtException e) {
-            throw new IllegalArgumentToken();
-        } catch (io.jsonwebtoken.SignatureException e) {
-            throw new InvalidSignatureException();
-        } catch (io.jsonwebtoken.UnsupportedJwtException e) {
-            throw new UnsupportedTokenException();
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentToken();
-        } catch (Exception e) {
-            throw new InvalidTokenException();
-        }
+        // } catch (ExpiredJwtException e) {
+        //     throw new ExpiredTokenException();
+        // } catch (io.jsonwebtoken.MalformedJwtException e) {
+        //     throw new IllegalArgumentToken();
+        // } catch (io.jsonwebtoken.SignatureException e) {
+        //     throw new InvalidSignatureException();
+        // } catch (io.jsonwebtoken.UnsupportedJwtException e) {
+        //     throw new UnsupportedTokenException();
+        // } catch (IllegalArgumentException e) {
+        //     throw new IllegalArgumentToken();
+        // } catch (Exception e) {
+        //     throw new InvalidTokenException();
+        // }
     }
 }

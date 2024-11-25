@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import swe.second.team_matching_server.common.dto.ApiResponse;
 
@@ -39,9 +41,10 @@ public class CommentController {
     }
 
     @PostMapping
-    public ApiResponse<CommentResponse> createComment(@RequestBody CommentCreateDto commentCreateDto) {
-        // TODO: 인증 추가
-        String userId = "test";
+    public ApiResponse<CommentResponse> createComment(
+        @RequestBody CommentCreateDto commentCreateDto,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
         commentCreateDto.setUserId(userId);
         Meeting meeting = meetingService.findById(commentCreateDto.getMeetingId());
 
@@ -51,9 +54,10 @@ public class CommentController {
     }
 
     @PutMapping("/{commentId}")
-    public ApiResponse<CommentResponse> updateComment(@PathVariable Long commentId, @RequestBody CommentCreateDto commentCreateDto) {
-        // TODO: 인증 추가
-        String userId = "test";
+    public ApiResponse<CommentResponse> updateComment(
+        @PathVariable Long commentId, @RequestBody CommentCreateDto commentCreateDto,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
         commentCreateDto.setUserId(userId);
         Meeting meeting = meetingService.findById(commentCreateDto.getMeetingId());
 
@@ -63,9 +67,9 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ApiResponse<Void> deleteComment(@PathVariable Long commentId) {
-        // TODO: 인증 추가
-        String userId = "test";
+    public ApiResponse<Void> deleteComment(
+        @PathVariable Long commentId, @AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
         commentService.deleteComment(commentId, userId);
 
         return ApiResponse.success();

@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import swe.second.team_matching_server.common.dto.ApiResponse;
 import swe.second.team_matching_server.domain.auth.model.dto.TokenResponse;
 import swe.second.team_matching_server.domain.auth.model.dto.LoginRequest;
-import swe.second.team_matching_server.domain.auth.model.dto.RegisterRequest;
+import swe.second.team_matching_server.domain.auth.model.dto.SignupRequest;
 import swe.second.team_matching_server.domain.auth.service.AuthService;
 import swe.second.team_matching_server.domain.auth.model.dto.RefreshRequest;
 import swe.second.team_matching_server.domain.auth.model.dto.LogoutRequest;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -30,11 +30,11 @@ public class AuthController {
         return ApiResponse.success(authService.refreshToken(refreshRequest));
     }
 
-    @PostMapping("/register")
-    public ApiResponse<TokenResponse> register(
+    @PostMapping("/signup")
+    public ApiResponse<TokenResponse> signup(
         @RequestParam(value = "profile", required = false) MultipartFile profile, 
-        @RequestPart RegisterRequest registerRequest) {
-        return ApiResponse.success(authService.register(registerRequest, profile));
+        @RequestPart SignupRequest signupRequest) {
+        return ApiResponse.success(authService.signup(signupRequest, profile));
     }
 
     @PostMapping("/login")

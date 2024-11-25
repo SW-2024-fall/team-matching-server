@@ -1,7 +1,7 @@
 package swe.second.team_matching_server.domain.user.model.mapper;
 
 import org.springframework.stereotype.Component;
-import swe.second.team_matching_server.domain.auth.model.dto.RegisterRequest;
+import swe.second.team_matching_server.domain.auth.model.dto.SignupRequest;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.user.model.dto.UserElement;
 import swe.second.team_matching_server.domain.user.model.entity.User;
@@ -15,13 +15,14 @@ public class UserMapper {
                 .studentId(user.getStudentId()).phoneNumber(user.getPhoneNumber())
                 .features(user.getFeatures()).build();
     }
-    
-    public static User toEntity(RegisterRequest registerRequest, File profileImage) {
-        return User.builder().username(registerRequest.getUsername())
-            .email(registerRequest.getEmail())
-            .password(registerRequest.getPassword())
-            .major(registerRequest.getMajor())
-            .studentId(registerRequest.getStudentId())
+
+    public static User toEntity(SignupRequest signupRequest, File profileImage) {
+        return User.builder().username(signupRequest.getUsername())
+            .email(signupRequest.getEmail())
+            .password(signupRequest.getPassword())
+            .major(signupRequest.getMajor())
+            .studentId(signupRequest.getStudentId())
+            .phoneNumber(signupRequest.getPhoneNumber())
             .profileImage(profileImage).build();
     }
 }

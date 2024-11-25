@@ -9,7 +9,7 @@ import swe.second.team_matching_server.domain.user.model.enums.Major;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest {
+public class SignupRequest {
 
     private String username;
     private String email;
