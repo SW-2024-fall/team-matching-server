@@ -55,7 +55,7 @@ public class MeetingService {
         this.commentService = commentService;
     }
 
-    public Page<Meeting> findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
+    public Page<Meeting>  findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
         Page<Meeting> meetings;
         if (min < 2) min = 2;
         if (max > 99) max = 99;
@@ -205,5 +205,6 @@ public class MeetingService {
         }
 
         meeting.delete();
+        meetingRepository.delete(meeting);
     }
 }
