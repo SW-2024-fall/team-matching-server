@@ -1,6 +1,7 @@
 package swe.second.team_matching_server.domain.like.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -36,10 +37,8 @@ public class UserMeetingLikeService {
     }
 
     public void delete(Meeting meeting, User user) {
-        userMeetingLikeRepository.delete(UserMeetingLike.builder()
-            .meeting(meeting)
-            .user(user)
-            .build());
+        Optional<UserMeetingLike> userMeetingLike = userMeetingLikeRepository.findByMeetingAndUser(meeting, user);
+        userMeetingLike.ifPresent(userMeetingLikeRepository::delete);
     }
 
     public List<MeetingElement> findAllByUserId(String userId) {
