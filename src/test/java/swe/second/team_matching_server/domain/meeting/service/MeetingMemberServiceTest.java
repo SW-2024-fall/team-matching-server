@@ -11,6 +11,7 @@ import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberRole;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
+import swe.second.team_matching_server.domain.meeting.model.exception.MeetingFullException;
 import swe.second.team_matching_server.domain.meeting.repository.MeetingMemberRepository;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 
@@ -89,47 +90,75 @@ public class MeetingMemberServiceTest {
         assertEquals("정기모임", result.get(1).getName());
     }
 
-//    @Test
-//    @DisplayName("T6 모임 신청")
-//    public void testRequestMeeting() {
-//        // given
-//        Long meetingId = 1L;
-//        String userId = "user123";
-//
-//        when(meetingMemberRepository.findRoleByMeetingIdAndUserId(meetingId, userId))
-//                .thenReturn(Optional.of(MeetingMemberRole.REQUESTED));
-//
-//        // when
-//        boolean isRequested = meetingMemberService.application()
-//
-//        // then
-//        assertTrue(isRequested);
-//        verify(meetingMemberRepository).findRoleByMeetingIdAndUserId(meetingId, userId);
-//    }
-//
-//    @Test
-//    @DisplayName("T7 모임 신청 해제")
-//    public void testCancelApplication() {
-//        // Given
-//        Long meetingId = 1L;
-//        String applicantId = "user1";
-//
-//        Meeting meeting = Meeting.builder().id(meetingId).build();
-//        User applicant = User.builder().id(applicantId).build();
-//        MeetingMember mockMeetingMember = MeetingMember.builder()
-//                .meeting(meeting)
-//                .user(applicant)
-//                .role(MeetingMemberRole.REQUESTED)
-//                .build();
-//
-//        when(meetingMemberService.isRequested(meetingId, applicantId)).thenReturn(true);
-//        when(meetingMemberRepository.findByMeetingIdAndUserId(meetingId, applicantId))
-//                .thenReturn(Optional.of(mockMeetingMember));
-//
-//        // When
-//        meetingMemberService.cancelApplication(meeting, applicantId);
-//
-//        // Then
-//        verify(meetingMemberRepository, times(1)).delete(mockMeetingMember);
-//    }
+    @Test
+    @DisplayName("T6 모임 신청")
+    public void testApplication() {
+        // given: 모임 멤버 수가 최대 인원에 도달한 경우
+        Meeting meeting = Meeting.builder()
+                .id(1L)
+                .name("토익스터디")
+                .title("토익스터디 모집")
+                .content("모집합니다.")
+                .days(Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY))
+                .location("시립대")
+                .startDate(LocalDate.of(2024, 12, 1))
+                .endDate(LocalDate.of(2024, 12, 31))
+                .minParticipant((byte) 4)
+                .maxParticipant((byte) 10)
+                .startTime(LocalTime.of(18, 0))
+                .endTime(LocalTime.of(20, 0))
+                .type(MeetingType.REGULAR)
+                .categories(List.of(MeetingCategory.LANGUAGE))
+                .currentParticipants(5)
+                .build();
+        when(meetingMemberRepository.countMembersByMeetingId(1L)).thenReturn((int) meeting.getMaxParticipant());
+
+        // when: MeetingFullException 예외가 발생해야 함
+        assertThrows(MeetingFullException.class, () -> meetingMemberService.application(meeting, "user123"));
+
+        // then: 멤버 수 조회 메서드가 호출되었는지 확인
+        verify(meetingMemberRepository).countMembersByMeetingId(1L);
+    }
+
+    @Test
+    @DisplayName("T7 모임 신청 해제")
+    public void testCancelApplication() {
+        // Given
+        Long meetingId = 1L;
+        String applicantId = "user1";
+
+        Meeting meeting = Meeting.builder()
+                .id(meetingId)
+                .name("토익스터디")
+                .title("토익스터디 모집")
+                .content("모집합니다.")
+                .days(Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY))
+                .location("시립대")
+                .startDate(LocalDate.of(2024, 12, 1))
+                .endDate(LocalDate.of(2024, 12, 31))
+                .minParticipant((byte) 4)
+                .maxParticipant((byte) 10)
+                .startTime(LocalTime.of(18, 0))
+                .endTime(LocalTime.of(20, 0))
+                .type(MeetingType.REGULAR)
+                .categories(List.of(MeetingCategory.LANGUAGE))
+                .currentParticipants(5)
+                .build();
+        User applicant = User.builder().id(applicantId).build();
+        MeetingMember mockMeetingMember = MeetingMember.builder()
+                .meeting(meeting)
+                .user(applicant)
+                .role(MeetingMemberRole.REQUESTED)
+                .build();
+
+        when(meetingMemberService.isRequested(meetingId, applicantId)).thenReturn(true);
+        when(meetingMemberRepository.findByMeetingIdAndUserId(meetingId, applicantId))
+                .thenReturn(Optional.of(mockMeetingMember));
+
+        // When
+        meetingMemberService.cancelApplication(meeting, applicantId);
+
+        // Then
+        verify(meetingMemberRepository, times(1)).delete(mockMeetingMember);
+    }
 }
