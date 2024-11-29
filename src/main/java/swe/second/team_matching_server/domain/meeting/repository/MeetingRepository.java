@@ -16,36 +16,38 @@ import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
-    @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.thumbnailFiles WHERE m.id = :meetingId")
+    @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.thumbnailFiles WHERE m.id = :meetingId AND m.deletedAt is null")
     Optional<Meeting> findByIdWithThumbnailFiles(Long meetingId);
 
-    @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.histories WHERE m.id = :meetingId")
+    @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.histories WHERE m.id = :meetingId AND m.deletedAt is null")
     Optional<Meeting> findByIdWithHistories(Long meetingId);
 
-    @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.members WHERE m.id = :meetingId")
+    @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.members WHERE m.id = :meetingId AND m.deletedAt is null")
     Optional<Meeting> findByIdWithMembers(Long meetingId);
 
-    @Query("SELECT h FROM History h WHERE h.meeting.id = :meetingId")
+    @Query("SELECT h FROM History h WHERE h.meeting.id = :meetingId AND h.meeting.deletedAt is null")
     List<History> findHistoriesById(Long meetingId);
 
-    @Query("SELECT m.members FROM Meeting m WHERE m.id = :meetingId")
+    @Query("SELECT m.members FROM Meeting m WHERE m.id = :meetingId AND m.deletedAt is null")
     List<MeetingMember> findMembersById(Long meetingId);
 
-    @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.thumbnailFiles")
+    @Query("SELECT m FROM Meeting m LEFT JOIN FETCH m.thumbnailFiles WHERE m.deletedAt is null")
     Page<Meeting> findAll(Pageable pageable);
 
     @Query("SELECT m FROM Meeting m " + 
         "LEFT JOIN FETCH m.thumbnailFiles " +
         "WHERE m.categories IN :categories " +
         "AND m.currentParticipants >= :min " + 
-        "AND m.currentParticipants <= :max")
+        "AND m.currentParticipants <= :max " +
+        "AND m.deletedAt is null")
     Page<Meeting> findAllWithCategoriesAndMinAndMax(List<MeetingCategory> categories, int min, int max, Pageable pageable);
 
     @Query("SELECT m FROM Meeting m " + 
         "LEFT JOIN FETCH m.thumbnailFiles " +
         "WHERE m.type = :type " +
         "AND m.currentParticipants >= :min " + 
-        "AND m.currentParticipants <= :max")
+        "AND m.currentParticipants <= :max " +
+        "AND m.deletedAt is null")
     Page<Meeting> findAllWithTypeAndMinAndMax(MeetingType type, int min, int max, Pageable pageable);
 
     @Query("SELECT m FROM Meeting m " + 
@@ -53,6 +55,7 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
         "WHERE m.categories IN :categories " +
         "AND m.type = :type " +
         "AND m.currentParticipants >= :min " + 
-        "AND m.currentParticipants <= :max")
+        "AND m.currentParticipants <= :max " +
+        "AND m.deletedAt is null")
     Page<Meeting> findAllWithConditions(List<MeetingCategory> categories, MeetingType type, int min, int max, Pageable pageable);
 }
