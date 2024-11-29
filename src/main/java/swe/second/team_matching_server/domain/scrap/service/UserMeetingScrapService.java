@@ -1,6 +1,7 @@
 package swe.second.team_matching_server.domain.scrap.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -55,10 +56,8 @@ public class UserMeetingScrapService {
 
     @Transactional
     public void delete(Meeting meeting, User user) {
-        userMeetingScrapRepository.delete(UserMeetingScrap.builder()
-            .meeting(meeting)
-            .user(user)
-            .build());
+        Optional<UserMeetingScrap> userMeetingScrap = userMeetingScrapRepository.findByMeetingAndUser(meeting, user);
+        userMeetingScrap.ifPresent(userMeetingScrapRepository::delete);
     }
 
     @Transactional
