@@ -31,8 +31,12 @@ public class UserFacadeService {
     private final CommentService commentService;
     private final MeetingFacadeService meetingFacadeService;
 
-    public UserResponse findById(String userId) {
-        return UserMapper.toUserResponse(userService.findById(userId));
+    public UserResponse findById(String userId, boolean isSelf) {
+        User user = userService.findById(userId);
+        if (isSelf) {
+            return UserMapper.toUserResponse(user);
+        }
+        return UserMapper.toUserResponse(user);
     }
 
     public UserResponse update(UserUpdateDto userUpdateDto, MultipartFile profileImage) {

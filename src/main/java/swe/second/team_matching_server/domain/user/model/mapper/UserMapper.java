@@ -6,6 +6,7 @@ import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.user.model.dto.UserElement;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 import swe.second.team_matching_server.domain.user.model.dto.UserResponse;
+import swe.second.team_matching_server.domain.user.model.dto.UserSelfResponse;
 
 @Component
 public class UserMapper {
@@ -19,6 +20,16 @@ public class UserMapper {
 
     public static UserResponse toUserResponse(User user) {
         return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getUsername())
+                .profileUrl(user.getProfileImage().getUrl())
+                .major(user.getMajor().getKoreanName())
+                .studentId(user.getStudentId())
+                .features(user.getFeatures()).build();
+    }
+
+    public static UserSelfResponse toUserSelfResponse(User user) {
+        return UserSelfResponse.builder()
                 .id(user.getId())
                 .name(user.getUsername())
                 .email(user.getEmail())
