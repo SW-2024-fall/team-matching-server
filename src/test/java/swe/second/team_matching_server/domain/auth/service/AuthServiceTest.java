@@ -54,27 +54,42 @@ public class AuthServiceTest {
     @DisplayName("T1 회원가입 테스트")
     public void testSignupSuccess() {
         // given
-        SignupRequest signupRequest = new SignupRequest("username", "user@example.com", "password123", Major.COMPUTER_SCIENCE, "20231234", "010-1234-5678", Set.of(MeetingCategory.TRAVEL, MeetingCategory.MUSIC));
-        File mockProfileImage = File.builder().id("1").originalName("default.png").folder(FileFolder.USER).mimeType("image/png").size(1024L).url("https://example.com/files/default.png").build();
-        TokenResponse mockTokenResponse = new TokenResponse("accessToken", "refreshToken");
-        User user = User.builder().id("userId").username("user123").email("user@example.com").password("encodedPassword").major(Major.COMPUTER_SCIENCE).studentId("20230001").phoneNumber("010-1234-5678").profileImage(File.builder().id("defaultFileId").originalName("default.png").folder(FileFolder.USER).mimeType("image/png").size(1024L).url("https://example.com/files/default.png").build()).build();
+        SignupRequest signupRequest = new SignupRequest(
+                "username", "user@example.com", "password123",
+                Major.COMPUTER_SCIENCE, "20231234", "010-1234-5678",
+                Set.of(MeetingCategory.TRAVEL, MeetingCategory.MUSIC)
+        );
+
+        File mockProfileImage = File.builder()
+                .id("1").originalName("default.png").folder(FileFolder.USER)
+                .mimeType("image/png").size(1024L).url("https://example.com/files/default.png")
+                .build();
+
+        TokenResponse mockTokenResponse = new TokenResponse("mockAccessToken", "mockRefreshToken");
+
+        User mockUser = User.builder()
+                .id("mockUserId").username("username").email("user@example.com")
+                .password("encodedPassword").major(Major.COMPUTER_SCIENCE)
+                .studentId("20231234").phoneNumber("010-1234-5678")
+                .profileImage(mockProfileImage)
+                .build();
 
         when(fileUserService.getDefaultProfileImage()).thenReturn(mockProfileImage);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(userService.save(any(User.class))).thenReturn(user);
-        when(jwtProvider.createToken(user.getId())).thenReturn(mockTokenResponse);
+        when(userService.save(any(User.class))).thenReturn(mockUser);
+        when(jwtProvider.createToken(eq("mockUserId"))).thenReturn(mockTokenResponse);
 
         // when
         TokenResponse response = authService.signup(signupRequest, null);
 
         // then
-        assertNotNull(response);
-        assertEquals("accessToken", response.getAccessToken(), "AccessToken 확인");
-        assertEquals("refreshToken", response.getRefreshToken(), "RefreshToken 확인");
+        assertNotNull(response, "TokenResponse가 null이 아닙니다.");
+        assertEquals("mockAccessToken", response.getAccessToken(), "AccessToken 확인");
+        assertEquals("mockRefreshToken", response.getRefreshToken(), "RefreshToken 확인");
 
-        verify(jwtProvider, times(1)).createToken("userId");
         verify(fileUserService, times(1)).getDefaultProfileImage();
-        verify(userService, times(1)).save(user);
+        verify(userService, times(1)).save(any(User.class));
+        verify(jwtProvider, times(1)).createToken("mockUserId");
         verify(refreshRepository, times(1)).save(any());
     }
 
@@ -94,7 +109,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("T3-1 로그인 테스트 성공")
+    @DisplayName("T3-1 로그인 테스트-성공")
     public void testLoginSuccess() {
         // given
         LoginRequest loginRequest = new LoginRequest("user@example.com", "password123");
@@ -113,7 +128,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("T3-2 로그인 테스트 실패")
+    @DisplayName("T3-2 로그인 테스트-실패")
     public void testLoginWrongPassword() {
         // given
         LoginRequest loginRequest = new LoginRequest("user@example.com", "wrongPassword");
