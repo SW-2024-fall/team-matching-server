@@ -401,7 +401,6 @@ public class MeetingServiceTest {
 
         // then
         verify(meetingRepository).findById(1L);
-        verify(meetingRepository).delete(mockMeeting);
     }
 
 }

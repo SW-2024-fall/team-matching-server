@@ -205,6 +205,5 @@ public class MeetingService {
         }
 
         meeting.delete();
-        meetingRepository.delete(meeting);
     }
 }
