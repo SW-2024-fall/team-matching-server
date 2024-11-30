@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import swe.second.team_matching_server.common.enums.FileFolder;
+import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
@@ -14,6 +16,8 @@ import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.exception.MeetingFullException;
 import swe.second.team_matching_server.domain.meeting.repository.MeetingMemberRepository;
 import swe.second.team_matching_server.domain.user.model.entity.User;
+import swe.second.team_matching_server.domain.user.model.enums.Major;
+import swe.second.team_matching_server.domain.user.service.UserService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -29,6 +33,9 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @Transactional
 public class MeetingMemberServiceTest {
+
+    @Mock
+    private UserService userService;
 
     @Mock
     private MeetingMemberRepository meetingMemberRepository;
@@ -111,10 +118,14 @@ public class MeetingMemberServiceTest {
                 .categories(List.of(MeetingCategory.LANGUAGE))
                 .currentParticipants(5)
                 .build();
+
+        User user = User.builder().id("userId").username("user123").email("user@example.com").password("encodedPassword").major(Major.COMPUTER_SCIENCE).studentId("20230001").phoneNumber("010-1234-5678").profileImage(File.builder().id("defaultFileId").originalName("default.png").folder(FileFolder.USER).mimeType("image/png").size(1024L).url("https://example.com/files/default.png").build()).build();
+
+        when(userService.findById("userId")).thenReturn(user);
         when(meetingMemberRepository.countMembersByMeetingId(1L)).thenReturn((int) meeting.getMaxParticipant());
 
         // when: MeetingFullException 예외가 발생해야 함
-        assertThrows(MeetingFullException.class, () -> meetingMemberService.application(meeting, "user123"));
+        assertThrows(MeetingFullException.class, () -> meetingMemberService.application(meeting, "userId"));
 
         // then: 멤버 수 조회 메서드가 호출되었는지 확인
         verify(meetingMemberRepository).countMembersByMeetingId(1L);
