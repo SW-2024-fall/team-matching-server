@@ -4,6 +4,8 @@ import java.io.File;
 
 import jakarta.annotation.PostConstruct;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,22 +13,28 @@ import org.springframework.beans.factory.annotation.Value;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.vertexai.VertexAiGeminiChatModel;
 
+@Slf4j
 @Configuration
 public class GeminiConfig {
 
     @Value("${gemini.project-id}")
-    private static String projectId;
+    private String projectId;
     @Value("${gemini.location}")
-    private static String location;
+    private String location;
     @Value("${gemini.model-name}")
-    private static String modelName;
-    @Value("${gemini.credentials-path}")
-    private static String credentialsPath;
+    private String modelName;
+    @Value("${gemini.credential-path}")
+    private String credentialPath;
 
     private ChatLanguageModel model;
 
     @PostConstruct
     public void init() {
+        log.info("projectId: " + projectId);
+        log.info("location: " + location);
+        log.info("modelName: " + modelName);
+        log.info("credentialPath: " + credentialPath);
+
         setGoogleCredentials();
         model = setModel();
     }
@@ -39,16 +47,16 @@ public class GeminiConfig {
                 .build();
     }
 
-    private static void setGoogleCredentials() {
+    private void setGoogleCredentials() {
         try {
-            // get current's absolute path
-            String currentPath = new File(".").getAbsolutePath();
             // cut 'src' and get project root path
-            String projectRootPath = currentPath.substring(0, currentPath.indexOf("src"));
-            String credentialsPath = projectRootPath + GeminiConfig.credentialsPath; 
+            String projectRootPath = new File(".").getAbsolutePath();
+            String credentialsPath = projectRootPath.substring(0, projectRootPath.lastIndexOf('.')) + credentialPath; 
 
             // set Google credentials property
             System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", credentialsPath);
+
+            log.info("GOOGLE_APPLICATION_CREDENTIALS: " + System.getProperty("GOOGLE_APPLICATION_CREDENTIALS"));
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to set Google credentials: " + e.getMessage(), e);
