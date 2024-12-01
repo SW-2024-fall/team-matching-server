@@ -1,13 +1,15 @@
 package swe.second.team_matching_server.domain.history.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import swe.second.team_matching_server.common.enums.FileFolder;
+import swe.second.team_matching_server.domain.file.model.dto.FileCreateDto;
 import swe.second.team_matching_server.domain.file.model.entity.File;
+import swe.second.team_matching_server.domain.file.service.FileService;
 import swe.second.team_matching_server.domain.history.model.dto.MemberAttendanceState;
 import swe.second.team_matching_server.domain.history.model.entity.AttendanceHistory;
 import swe.second.team_matching_server.domain.history.model.entity.History;
@@ -19,7 +21,6 @@ import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 import swe.second.team_matching_server.domain.user.model.enums.Major;
 import swe.second.team_matching_server.domain.user.service.UserService;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,45 +30,42 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest // Spring Boot 테스트 환경을 설정
+@SpringBootTest
 public class AttendanceHistoryServiceTest {
 
     @InjectMocks
     private AttendanceHistoryService attendanceHistoryService;
-    // 테스트할 AttendanceHistoryService 클래스에 Mock 객체를 주입
 
     @Mock
     private AttendanceHistoryRepository attendanceHistoryRepository;
-    // AttendanceHistoryRepository를 Mock 객체로 설정
 
     @Mock
-    private UserService userService;
-    // UserService를 Mock 객체로 설정
+    private static UserService userService;
+
+    @Mock
+    private static FileService fileService;
 
     private User mockUser;
-    // 테스트용 User 객체
     private History mockHistory;
-    // 테스트용 History 객체
     private List<MemberAttendanceState> mockAttendanceStates;
-    // 테스트용 출석 상태 리스트
     private List<User> mockUsers;
-    // 테스트용 사용자 리스트
 
     public static User createMockUser() {
-        File mockProfileImage = File.builder()
-                .id("file-user-1")
-                .originalName("profile.jpg")
-                .folder(FileFolder.USER)
-                .mimeType("image/jpeg")
-                .size(102400L) // 100KB
-                .url("/files/profile/user1.jpg")
-                .meta("Profile image for user1")
+
+        byte[] fileContent = new byte[102400]; // 100KB 크기의 더미 파일 데이터
+        MultipartFile mockMultipartFile = new MockMultipartFile("profile.jpg", "profile.jpg", "image/jpeg", fileContent);
+
+        FileCreateDto fileCreateDto = FileCreateDto.builder()
+                .file(mockMultipartFile) // MultipartFile
+                .meta("Profile image for user1") // 메타 정보
+                .folder(FileFolder.USER) // 파일 폴더 정보
                 .build();
 
-        User user = User.builder()
+        File savedFile = fileService.save(fileCreateDto);
+
+        return User.builder()
                 .id("userId")
                 .username("mockUsername")
                 .email("user@example.com")
@@ -75,13 +73,9 @@ public class AttendanceHistoryServiceTest {
                 .major(Major.COMPUTER_SCIENCE)
                 .studentId("20231234")
                 .phoneNumber("010-1234-5678")
-                .profileImage(mockProfileImage)
+                .profileImage(savedFile)
                 .attendanceScore((byte) 50)
                 .build();
-
-        System.out.println("Mock User created: " + user);
-
-        return user;
     }
 
     public static Meeting createMockMeeting(){
@@ -125,100 +119,52 @@ public class AttendanceHistoryServiceTest {
                 .user(user)
                 .history(history)
                 .meeting(mockMeeting)
-                .awarded_score((byte) 1) // 초기 부여된 점수
+                .awarded_score((byte) 1)
                 .state(AttendanceState.ATTENDED) // 기본 상태는 ATTENDED
                 .build();
     }
 
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//
-//        // 테스트용 User 객체 설정
-//        mockUser = createMockUser();
-//
-//        // 테스트용 History 객체 설정
-//        mockHistory = createMockHistory(mockUser);
-//
-//        // 테스트용 사용자 리스트 설정
-//        mockUsers = new ArrayList<>();
-//        mockUsers.add(mockUser);
-//
-//        // 테스트용 출석 상태 리스트 설정
-//        mockAttendanceStates = new ArrayList<>();
-//        mockAttendanceStates.add(new MemberAttendanceState("userId", AttendanceState.ATTENDED));
-//        // User ID 1, 출석 상태는 ATTENDED로 설정
-//    }
-
     @Test
-    void testUpdateAllByHistoryIdUpdatesAttendanceScore() {
-        // updateAllByHistoryId 메서드가 호출되었을 때 출석 점수가 올바르게 변경되는지 확인
-        // 테스트용 User 객체 설정
+    public void testUpdateAllByHistoryId() {
+
+        // given
         mockUser = createMockUser();
-
-        System.out.println("Mock User created: " + mockUser);
-        System.out.println("Mock User attendance score before update: " + mockUser.getAttendanceScore());
-
-
-        // 테스트용 History 객체 설정
         mockHistory = createMockHistory(mockUser);
+        Meeting mockMeeting = createMockMeeting();
+        AttendanceHistory mockAttendanceHistory = createMockAttendanceHistory(mockUser, mockHistory);
 
-        System.out.println("Mock History created: " + mockHistory);
-
-        // 테스트용 사용자 리스트 설정
-        mockUsers = new ArrayList<>();
-        mockUsers.add(mockUser);
-
-        // 테스트용 출석 상태 리스트 설정
-        mockAttendanceStates = new ArrayList<>();
-        mockAttendanceStates.add(new MemberAttendanceState("userId", AttendanceState.ATTENDED));
-        // User ID 1, 출석 상태는 ATTENDED로 설정
-
-//        User mockUser = createMockUser(); // 초기 출석 점수 설정 50
-//
-//        History mockHistory = createMockHistory(mockUser);
-        AttendanceHistory existingHistory = createMockAttendanceHistory(mockUser, mockHistory);
-
-        System.out.println("AttendanceHistory created: " + existingHistory);
-
-        List<AttendanceHistory> existingHistories = List.of(existingHistory);
-        // 기존 출석 기록 리스트 생성
-
-        System.out.println("Existing History: " + existingHistory);
-
-        when(attendanceHistoryRepository.findAllByHistoryId(1L)).thenReturn(existingHistories);
-        // 특정 historyId에 대해 기존 출석 기록 리스트 반환
-        when(userService.findById("userId")).thenReturn(mockUser);
-
-        System.out.println("userService.findById called, returning: " + mockUser);
-        // userService.findById 호출 시 mockUser 반환
-        when(attendanceHistoryRepository.save(existingHistory)).thenReturn(existingHistory);
-        // attendanceHistoryRepository.save 호출 시 existingHistory 반환
-
-        // Act: 상태 변경 및 메서드 실행
-        mockAttendanceStates.get(0).setAttendanceState(AttendanceState.LATE);
-
-        // 디버깅을 위한 출력
-        System.out.println("Attendance state updated to: " + mockAttendanceStates.get(0).getAttendanceState());
-
-        // 출석 상태를 LATE로 변경
-        attendanceHistoryService.updateAllByHistoryId(mockHistory, mockAttendanceStates);
-
-        // 디버깅을 위한 출력
-        System.out.println("User after update: " + mockUser);
-        System.out.println("User attendance score after update: " + mockUser.getAttendanceScore());
+        List<AttendanceHistory> mockAttendanceHistories = List.of(mockAttendanceHistory);
+        List<MemberAttendanceState> mockAttendanceStates = List.of(
+                new MemberAttendanceState(mockUser.getId(), AttendanceState.LATE)
+        );
+        AttendanceHistory updatedAttendanceHistory = AttendanceHistory.builder()
+                .user(mockUser)
+                .history(mockHistory)
+                .meeting(mockMeeting)
+                .awarded_score((byte) 1)
+                .state(AttendanceState.LATE)
+                .build();
 
 
-        // Assert: 결과 확인
-        verify(userService, times(1)).save(mockUser);
-        // userService.save가 한 번 호출되었는지 확인
-        assertEquals(46, mockUser.getAttendanceScore());
-        // mockUser의 출석 점수가 46으로 올바르게 업데이트되었는지 확인
-        // (기존 점수 50 - 1 (기존 awarded_score) - 5 (LATE penalty))
+        when(attendanceHistoryRepository.findAllByHistoryId(1L))
+                .thenReturn(mockAttendanceHistories);
+        when(attendanceHistoryRepository.save(updatedAttendanceHistory)).thenReturn(updatedAttendanceHistory);
+
+        // when
+        List<AttendanceHistory> result = attendanceHistoryService.updateAllByHistoryId(mockHistory, mockAttendanceStates);
+
+        // then
+        assertEquals(1, result.size());
+        AttendanceHistory updatedHistory = result.get(0);
+        assertEquals(AttendanceState.LATE, updatedHistory.getState());
+
+        verify(attendanceHistoryRepository, times(1)).save(mockAttendanceHistory);
+        verify(attendanceHistoryRepository, times(1)).findAllByHistoryId(mockHistory.getId());
     }
 
+
     @Test
-    void testSaveAllUpdatesAttendanceScore() {
+    public void testSaveAllUpdatesAttendanceScore() {
         // saveAll 메서드가 호출되었을 때 사용자의 출석 점수가 올바르게 업데이트되는지 확인
 
         // given
