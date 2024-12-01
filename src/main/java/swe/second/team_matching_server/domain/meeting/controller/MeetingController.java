@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 
 import swe.second.team_matching_server.domain.meeting.service.MeetingFacadeService;
 import swe.second.team_matching_server.common.dto.ApiResponse;
+import swe.second.team_matching_server.core.gemini.dto.MeetingRecommendation;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingResponse;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingCreateDto;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
@@ -21,7 +22,6 @@ import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
 import swe.second.team_matching_server.domain.file.model.exception.FileMaxCountExceededException;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -64,6 +64,13 @@ public class MeetingController {
     String userId = userDetails.getUsername();
     
     return ApiResponse.success(meetingFacadeService.findAllByUserId(userId));
+  }
+
+  @GetMapping("/recommend")
+  @Operation(summary = "모임 추천", description = "모임을 추천합니다.")
+  public ApiResponse<List<MeetingRecommendation>> recommend(
+    @AuthenticationPrincipal UserDetails userDetails, @PageableDefault(size = 30) Pageable pageable) {
+    return ApiResponse.success(meetingFacadeService.recommend(userDetails.getUsername(), pageable));
   }
 
   @GetMapping("/{meetingId}")

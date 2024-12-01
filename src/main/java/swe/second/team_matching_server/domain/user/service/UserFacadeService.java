@@ -19,6 +19,7 @@ import swe.second.team_matching_server.domain.like.service.UserMeetingLikeServic
 import swe.second.team_matching_server.domain.comment.service.CommentService;
 import swe.second.team_matching_server.domain.meeting.service.MeetingFacadeService;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
+import swe.second.team_matching_server.domain.user.model.dto.UserSelfResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +32,14 @@ public class UserFacadeService {
     private final CommentService commentService;
     private final MeetingFacadeService meetingFacadeService;
 
+    public UserSelfResponse findSelf(String userId) {
+        User user = userService.findById(userId);
+        return UserMapper.toUserSelfResponse(user);
+    }
+
     public UserResponse findById(String userId) {
-        return UserMapper.toUserResponse(userService.findById(userId));
+        User user = userService.findById(userId);
+        return UserMapper.toUserResponse(user);
     }
 
     public UserResponse update(UserUpdateDto userUpdateDto, MultipartFile profileImage) {

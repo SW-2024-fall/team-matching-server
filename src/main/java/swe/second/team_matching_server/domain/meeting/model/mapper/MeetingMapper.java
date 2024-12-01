@@ -92,7 +92,7 @@ public class MeetingMapper {
     public MeetingMembers toMeetingMembers(List<MeetingMember> members, boolean isExecutive) {
         return MeetingMembers.builder()
             .member(members.stream()
-                .filter(m -> (isExecutive || m.getRole() != MeetingMemberRole.REQUESTED)
+                .filter(m -> m.getRole() != MeetingMemberRole.REQUESTED
                     && m.getRole() != MeetingMemberRole.EXTERNAL)
                 .map(m -> toMeetingMemberElement(m, isExecutive))
                 .collect(Collectors.toList()))

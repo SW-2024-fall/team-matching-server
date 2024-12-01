@@ -49,7 +49,13 @@ public enum ResultCode {
   HISTORY_INVALID_ATTENDANCE_HISTORY("모든 멤버가 출석 히스토리를 가지고 있어야 합니다."),
 
   // comment
-  COMMENT_NOT_FOUND("해당 댓글이 존재하지 않습니다.");
+  COMMENT_NOT_FOUND("해당 댓글이 존재하지 않습니다."),
+
+  // content analyzer
+  CONTENT_ANALYZER_ERROR("콘텐츠 분석 오류가 발생했습니다."),
+  MEETING_ANALYSIS_ERROR("모임 분석 오류가 발생했습니다."),
+  MEMBER_ANALYSIS_ERROR("멤버 분석 오류가 발생했습니다."),
+  HISTORY_ANALYSIS_ERROR("히스토리 분석 오류가 발생했습니다.");
 
   private final String message;
 

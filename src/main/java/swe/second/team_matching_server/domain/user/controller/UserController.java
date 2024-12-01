@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import swe.second.team_matching_server.domain.user.service.UserFacadeService;
@@ -19,6 +20,7 @@ import swe.second.team_matching_server.common.dto.ApiResponse;
 import swe.second.team_matching_server.domain.user.model.dto.UserResponse;
 import swe.second.team_matching_server.domain.user.model.dto.UserUpdateDto;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
+import swe.second.team_matching_server.domain.user.model.dto.UserSelfResponse;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,9 +29,14 @@ public class UserController {
     private final UserFacadeService userFacadeService;
 
     @GetMapping
-    public ApiResponse<UserResponse> getUser(@AuthenticationPrincipal UserDetails userDetails) {
+    public ApiResponse<UserSelfResponse> getSelf(@AuthenticationPrincipal UserDetails userDetails) {
         String userId = userDetails.getUsername();
 
+        return ApiResponse.success(userFacadeService.findSelf(userId));
+    }
+
+    @GetMapping("/{userId}")
+    public ApiResponse<UserResponse> getUser(@PathVariable String userId) {
         return ApiResponse.success(userFacadeService.findById(userId));
     }
 

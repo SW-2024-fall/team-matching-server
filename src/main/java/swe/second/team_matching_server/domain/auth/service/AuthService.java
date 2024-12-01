@@ -45,6 +45,7 @@ public class AuthService {
                 .refreshToken(token.getRefreshToken())
                 .build()
         );
+
         return token;
     }
 
@@ -81,7 +82,8 @@ public class AuthService {
 
         User user = UserMapper.toEntity(signupRequest, profileImage);
         user.updatePassword(passwordEncoder.encode(user.getPassword()));
-        userService.save(user);
+
+        user = userService.save(user); // save 후 user 객체를 재할당
 
         return createToken(user.getId());
     }
