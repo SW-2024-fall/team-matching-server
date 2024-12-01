@@ -46,9 +46,9 @@ import java.util.HashSet;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true, of = "id")
 @Filter(name = "deletedMeetingFilter", condition = "deleted_at is null")
+@ToString(callSuper = false, exclude = {"days", "location", "startDate", "endDate", "minParticipant", "maxParticipant", "startTime", "endTime", "thumbnailFiles", "features", "histories", "members", "currentParticipants", "likeCount", "commentCount", "scrapCount", "applicationMethod", "analyzedFeatures", "analyzedIntroduction"})
 public class Meeting extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

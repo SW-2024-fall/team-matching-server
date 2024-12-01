@@ -6,19 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
-import swe.second.team_matching_server.domain.meeting.model.dto.MeetingResponse;
-import swe.second.team_matching_server.domain.meeting.model.enums.MeetingMemberRole;
-import swe.second.team_matching_server.domain.meeting.model.dto.MeetingCreateDto;
-import swe.second.team_matching_server.domain.meeting.model.mapper.MeetingMapper;
 import swe.second.team_matching_server.domain.file.model.dto.FileCreateDto;
-import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
-import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
-import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
-import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
-import swe.second.team_matching_server.domain.meeting.model.entity.MeetingMember;
-import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
-import swe.second.team_matching_server.domain.meeting.model.dto.MeetingMembers;
+import swe.second.team_matching_server.domain.meeting.model.entity.*;
+import swe.second.team_matching_server.domain.meeting.model.dto.*;
+import swe.second.team_matching_server.domain.meeting.model.enums.*;
+import swe.second.team_matching_server.domain.meeting.model.mapper.MeetingMapper;
 import swe.second.team_matching_server.common.enums.FileFolder;
+import swe.second.team_matching_server.core.gemini.*;
+import swe.second.team_matching_server.core.gemini.dto.MeetingRecommendation;
 import swe.second.team_matching_server.domain.like.service.UserMeetingLikeService;
 import swe.second.team_matching_server.domain.scrap.service.UserMeetingScrapService;
 import swe.second.team_matching_server.domain.comment.service.CommentService;
@@ -29,7 +24,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class MeetingFacadeService {
   private final MeetingService meetingService;
   private final CommentService commentService;
@@ -38,22 +36,15 @@ public class MeetingFacadeService {
   private final MeetingMemberService meetingMemberService;
   private final MeetingMapper meetingMapper;
   private final UserService userService;
+  private final ContentAnalyzer contentAnalyzer;
+  private final MeetingRecommender meetingRecommender;
 
-  public MeetingFacadeService(
-    MeetingService meetingService,  
-    CommentService commentService, 
-    UserMeetingScrapService userMeetingScrapService, 
-    UserMeetingLikeService userMeetingLikeService,
-    MeetingMemberService meetingMemberService, 
-    MeetingMapper meetingMapper,
-    UserService userService) {
-    this.meetingService = meetingService;
-    this.commentService = commentService;
-    this.userMeetingScrapService = userMeetingScrapService;
-    this.userMeetingLikeService = userMeetingLikeService;
-    this.meetingMemberService = meetingMemberService;
-    this.meetingMapper = meetingMapper;
-    this.userService = userService;
+  @Transactional
+  public List<MeetingRecommendation> recommend(String userId, Pageable pageable) {
+    Page<Meeting> meetings = meetingService.findAllWithConditions(pageable, null, null, 2, 99);
+    User user = userService.findById(userId);
+
+    return meetingRecommender.recommendMeetings(user, meetings.getContent());
   }
 
   public Page<MeetingElement> findAllWithConditions(Pageable pageable, List<MeetingCategory> categories, MeetingType type, int min, int max) {
@@ -106,6 +97,9 @@ public class MeetingFacadeService {
 
     Meeting meeting = meetingMapper.toEntity(meetingCreateDto);
     Meeting savedMeeting = meetingService.create(fileCreateDtos, meeting, userId);
+
+    savedMeeting = meetingService.update(contentAnalyzer.analyzeMeetingComplete(savedMeeting));
+
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(savedMeeting.getId());
 
     MeetingResponse meetingResponse = meetingMapper.toResponse(savedMeeting, members, true);
@@ -123,6 +117,7 @@ public class MeetingFacadeService {
       .collect(Collectors.toList());
 
     Meeting updatedMeeting = meetingService.update(meetingId, fileCreateDtos, meetingUpdateDto, userId);
+    updatedMeeting = meetingService.update(contentAnalyzer.analyzeMeetingComplete(updatedMeeting));
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(updatedMeeting.getId());
     boolean isLiked = userMeetingLikeService.isLiked(userId, meetingId);
     boolean isScraped = userMeetingScrapService.isScraped(userId, meetingId);
