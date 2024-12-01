@@ -1,4 +1,4 @@
-package swe.second.team_matching_server.domain.meeting.FeatureExtract;
+package swe.second.team_matching_server.core.featureExtract;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.vertexai.VertexAiGeminiChatModel;
