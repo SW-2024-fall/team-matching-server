@@ -109,6 +109,10 @@ public class User extends Base{
         this.features.removeAll(features);
     }
 
+    public void updateFeatures(List<String> features) {
+        this.features = features;
+    }
+
     public void updatePreferredCategories(Set<MeetingCategory> preferredCategories) {
         this.preferredCategories = preferredCategories;
     }
