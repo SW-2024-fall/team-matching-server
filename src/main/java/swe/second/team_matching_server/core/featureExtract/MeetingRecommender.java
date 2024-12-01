@@ -43,8 +43,7 @@ public class MeetingRecommender {
             반드시 모임 ID만 대괄호 안에 숫자로 입력해주세요.
             """;
 
-    public List<MeetingRecommendation> recommendMeetings(User user,
-    List<Meeting> meetings) {
+    public List<MeetingRecommendation> recommendMeetings(User user, List<Meeting> meetings) {
         String prompt = String.format(RECOMMENDATION_PROMPT,
                 user.getUsername(),
                 user.getMajor().toString(),
