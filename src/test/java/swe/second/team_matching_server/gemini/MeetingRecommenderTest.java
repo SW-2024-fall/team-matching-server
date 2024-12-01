@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import swe.second.team_matching_server.core.featureExtract.MeetingRecommender;
-import swe.second.team_matching_server.core.featureExtract.dto.MeetingRecommendation;
+import swe.second.team_matching_server.core.gemini.MeetingRecommender;
+import swe.second.team_matching_server.core.gemini.dto.MeetingRecommendation;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.user.model.entity.User;

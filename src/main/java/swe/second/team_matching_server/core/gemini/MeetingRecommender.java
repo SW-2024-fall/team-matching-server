@@ -1,4 +1,4 @@
-package swe.second.team_matching_server.core.featureExtract;
+package swe.second.team_matching_server.core.gemini;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
-
-import swe.second.team_matching_server.core.featureExtract.dto.MeetingRecommendation;
+import swe.second.team_matching_server.core.gemini.dto.MeetingRecommendation;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.user.model.entity.User;
 

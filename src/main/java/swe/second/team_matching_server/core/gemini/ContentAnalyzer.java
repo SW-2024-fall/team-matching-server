@@ -1,4 +1,4 @@
-package swe.second.team_matching_server.core.featureExtract;
+package swe.second.team_matching_server.core.gemini;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -21,9 +21,8 @@ import swe.second.team_matching_server.domain.history.model.exception.HistoryNoP
 import swe.second.team_matching_server.domain.history.model.dto.HistoryUpdateDto;
 import swe.second.team_matching_server.common.enums.FileFolder;
 import swe.second.team_matching_server.common.exception.BadRequestException;
+import swe.second.team_matching_server.core.gemini.ContentAnalyzer;
 import swe.second.team_matching_server.domain.history.model.exception.HistoryInvalidAttendanceHistoryException;
-import swe.second.team_matching_server.core.featureExtract.ContentAnalyzer;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;

@@ -12,16 +12,14 @@ import swe.second.team_matching_server.domain.meeting.model.dto.*;
 import swe.second.team_matching_server.domain.meeting.model.enums.*;
 import swe.second.team_matching_server.domain.meeting.model.mapper.MeetingMapper;
 import swe.second.team_matching_server.common.enums.FileFolder;
-import swe.second.team_matching_server.core.featureExtract.MeetingRecommender;
-import swe.second.team_matching_server.core.featureExtract.dto.MeetingRecommendation;
+import swe.second.team_matching_server.core.gemini.*;
+import swe.second.team_matching_server.core.gemini.dto.MeetingRecommendation;
 import swe.second.team_matching_server.domain.like.service.UserMeetingLikeService;
 import swe.second.team_matching_server.domain.scrap.service.UserMeetingScrapService;
 import swe.second.team_matching_server.domain.comment.service.CommentService;
 import swe.second.team_matching_server.domain.comment.model.dto.CommentResponse;
 import swe.second.team_matching_server.domain.user.service.UserService;
 import swe.second.team_matching_server.domain.user.model.entity.User;
-import swe.second.team_matching_server.core.featureExtract.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;

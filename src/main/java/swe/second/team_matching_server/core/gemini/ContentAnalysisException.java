@@ -1,4 +1,4 @@
-package swe.second.team_matching_server.core.featureExtract;
+package swe.second.team_matching_server.core.gemini;
 
 import swe.second.team_matching_server.common.exception.TeamMatchingException;
 

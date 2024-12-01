@@ -1,4 +1,4 @@
-package swe.second.team_matching_server.core.featureExtract.dto;
+package swe.second.team_matching_server.core.gemini.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

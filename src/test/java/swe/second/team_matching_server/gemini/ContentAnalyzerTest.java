@@ -1,6 +1,6 @@
 package swe.second.team_matching_server.gemini;
 
-import swe.second.team_matching_server.core.featureExtract.*;
+import swe.second.team_matching_server.core.gemini.*;
 import swe.second.team_matching_server.domain.history.model.entity.History;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;

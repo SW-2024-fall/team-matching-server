@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 
 import swe.second.team_matching_server.domain.meeting.service.MeetingFacadeService;
 import swe.second.team_matching_server.common.dto.ApiResponse;
+import swe.second.team_matching_server.core.gemini.dto.MeetingRecommendation;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingResponse;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingCreateDto;
 import swe.second.team_matching_server.domain.meeting.model.enums.MeetingCategory;
@@ -21,8 +22,6 @@ import swe.second.team_matching_server.domain.meeting.model.enums.MeetingType;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingElement;
 import swe.second.team_matching_server.domain.file.model.exception.FileMaxCountExceededException;
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
-import swe.second.team_matching_server.core.featureExtract.dto.MeetingRecommendation;
-
 import java.util.List;
 import java.util.ArrayList;
 
