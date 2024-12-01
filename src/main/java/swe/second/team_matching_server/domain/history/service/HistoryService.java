@@ -22,6 +22,7 @@ import swe.second.team_matching_server.domain.history.model.dto.HistoryUpdateDto
 import swe.second.team_matching_server.common.enums.FileFolder;
 import swe.second.team_matching_server.common.exception.BadRequestException;
 import swe.second.team_matching_server.domain.history.model.exception.HistoryInvalidAttendanceHistoryException;
+import swe.second.team_matching_server.core.featureExtract.ContentAnalyzer;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,11 +35,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
 import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class HistoryService {
     private final HistoryRepository historyRepository;
     private final HistoryMapper historyMapper;
@@ -47,24 +51,7 @@ public class HistoryService {
     private final FileService fileService;
     private final MeetingService meetingService;
     private final AttendanceHistoryService attendanceHistoryService;
-
-    public HistoryService(
-        HistoryRepository historyRepository, 
-        HistoryMapper historyMapper, 
-        MeetingMemberService meetingMemberService,
-        UserService userService,
-        FileService fileService,
-        MeetingService meetingService,
-        AttendanceHistoryService attendanceHistoryService
-    ) {
-        this.historyRepository = historyRepository;
-        this.historyMapper = historyMapper;
-        this.meetingMemberService = meetingMemberService;
-        this.userService = userService;
-        this.fileService = fileService;
-        this.meetingService = meetingService;
-        this.attendanceHistoryService = attendanceHistoryService;
-    }
+    private final ContentAnalyzer contentAnalyzer;
 
     public Page<HistoryElement> findAllByUserId(Pageable pageable, String userId) {
         int attendanceCount = attendanceHistoryService.countAllByUserId(userId);
@@ -134,6 +121,12 @@ public class HistoryService {
         List<AttendanceHistory> attendanceHistories = attendanceHistoryService.saveAll(savedHistory, attendeesUsers, historyCreateDto.getAttendanceStates());
         savedHistory.updateAttendanceHistories(attendanceHistories);
 
+        Meeting updatedMeeting = contentAnalyzer.updateMeetingFromHistory(savedHistory, meeting);
+        meetingService.update(updatedMeeting);
+        for (User attendee : attendeesUsers) {
+            User updatedUser = contentAnalyzer.updateUserFromHistory(savedHistory, attendee);
+            userService.update(updatedUser);
+        }
         return historyMapper.toHistoryResponse(savedHistory, attendanceHistories);
     }
 

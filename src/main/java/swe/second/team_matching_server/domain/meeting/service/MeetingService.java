@@ -188,9 +188,13 @@ public class MeetingService {
 
         meetingMemberService.createLeader(meeting, leaderId);
         Meeting savedMeeting = meetingRepository.findByIdWithThumbnailFiles(meeting.getId())
-            .orElseThrow(() -> new MeetingNotFoundException());
+                .orElseThrow(() -> new MeetingNotFoundException());
 
         return savedMeeting;
+    }
+    
+    public Meeting update(Meeting meeting) {
+        return meetingRepository.save(meeting);
     }
 
     @Transactional
