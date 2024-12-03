@@ -80,6 +80,8 @@ public class MeetingMapper {
             .startTime(meeting.getStartTime())
             .endTime(meeting.getEndTime())
             .meta(meeting.getMeta())
+            .analyzedFeatures(meeting.getAnalyzedFeatures())
+            .analyzedIntroduction(meeting.getAnalyzedIntroduction())
             .applicationMethod(meeting.getApplicationMethod())
             .currentParticipants(meeting.getCurrentParticipants())
             .likes(meeting.getLikeCount())
