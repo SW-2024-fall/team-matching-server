@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Component;
@@ -14,8 +15,9 @@ import swe.second.team_matching_server.domain.history.model.entity.History;
 import swe.second.team_matching_server.domain.meeting.model.entity.Meeting;
 import swe.second.team_matching_server.domain.meeting.model.enums.*;
 import swe.second.team_matching_server.domain.user.model.entity.User;
-import swe.second.team_matching_server.common.enums.ResultCode; 
+import swe.second.team_matching_server.common.enums.ResultCode;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ContentAnalyzer {
@@ -25,7 +27,7 @@ public class ContentAnalyzer {
     private static final String FEATURE_PROMPT = """
             당신은 서울시립대학교 학생들의 모임 게시글의 제목과 내용에서 주요 토픽을 추출하는 전문가입니다.
             당신이 추출하는 토픽은 학생들이 모임 게시글의 특징을 잘 파악할 수 있도록 해야 됩니다.
-            모임 게시글의 특징은 문장이 아닌 단어로 구성되어야 합니다.
+            모임 게시글의 특징은 문장이 아닌 하나의 단어로 구성되어야 합니다.
 
             다음 게시글에서 가장 중요한 3개의 토픽을 추출해주세요:
             1. 모임의 목적
@@ -256,6 +258,9 @@ public class ContentAnalyzer {
             meeting.updateAnalyzedFeatures(characteristics);
             String summary = generateSummary(meeting);
             meeting.updateAnalyzedIntroduction(summary);
+
+            log.info("meeting features: " + meeting.getAnalyzedFeatures());
+            log.info("meeting summary: " + meeting.getAnalyzedIntroduction());
             
             return meeting;
         } catch (Exception e) {
@@ -267,6 +272,7 @@ public class ContentAnalyzer {
         try {
             List<String> characteristics = analyzeUser(user);
             user.updateFeatures(characteristics);
+            log.info("user features: " + user.getFeatures());
         
             return user;
         } catch (Exception e) {
