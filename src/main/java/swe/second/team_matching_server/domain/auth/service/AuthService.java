@@ -24,6 +24,7 @@ import swe.second.team_matching_server.domain.auth.model.dto.RefreshRequest;
 import swe.second.team_matching_server.domain.auth.model.dto.LoginRequest;
 import swe.second.team_matching_server.domain.auth.model.exception.WrongPasswordException;
 import swe.second.team_matching_server.domain.auth.model.exception.RefreshTokenNofoundExeption;
+import swe.second.team_matching_server.core.gemini.ContentAnalyzer;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class AuthService {
     private final FileUserService fileUserService;
     private final JwtProvider jwtProvider;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final ContentAnalyzer contentAnalyzer;
 
     @Transactional
     public TokenResponse createToken(String userId) {
@@ -81,6 +83,7 @@ public class AuthService {
         }
 
         User user = UserMapper.toEntity(signupRequest, profileImage);
+        user = contentAnalyzer.analyzeUserComplete(user);
         user.updatePassword(passwordEncoder.encode(user.getPassword()));
 
         user = userService.save(user); // save 후 user 객체를 재할당
