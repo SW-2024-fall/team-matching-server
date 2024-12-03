@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MeetingFacadeService {
@@ -96,9 +98,9 @@ public class MeetingFacadeService {
       .collect(Collectors.toList());
 
     Meeting meeting = meetingMapper.toEntity(meetingCreateDto);
-    Meeting savedMeeting = meetingService.create(fileCreateDtos, meeting, userId);
+    meeting = meetingService.update(contentAnalyzer.analyzeMeetingComplete(meeting));
 
-    savedMeeting = meetingService.update(contentAnalyzer.analyzeMeetingComplete(savedMeeting));
+    Meeting savedMeeting = meetingService.create(fileCreateDtos, meeting, userId);
 
     List<MeetingMember> members = meetingMemberService.findAllByMeetingId(savedMeeting.getId());
 
