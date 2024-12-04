@@ -61,7 +61,7 @@ public class UserController {
     @GetMapping("/likes")
     public ApiResponse<List<MeetingElement>> getMeeting(@AuthenticationPrincipal UserDetails userDetails) {
         String userId = userDetails.getUsername();
-        return ApiResponse.success(userFacadeService.findMeeting(userId));
+        return ApiResponse.success(userFacadeService.findLikedMeeting(userId));
     }
 
     @GetMapping("/scraped")
