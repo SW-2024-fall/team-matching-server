@@ -40,10 +40,13 @@ public class FileUserService {
 
   @Transactional
   public File updateFileByUserId(String userId, FileCreateDto fileCreateDto) {
-    File file = findByUserId(userId);
+    try {
+      File file = findByUserId(userId);
 
-    if (file.getUser() != null) {
-      fileService.delete(file);
+      if (file.getUser() != null) {
+        fileService.delete(file);
+      }
+    } catch (FileNotFoundException e) {
     }
 
     fileCreateDto.setFolder(FileFolder.USER);

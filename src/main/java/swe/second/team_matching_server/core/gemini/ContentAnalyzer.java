@@ -92,7 +92,7 @@ public class ContentAnalyzer {
     private static final String UPDATE_MEETING_FEATURES_PROMPT = """
             당신은 서울시립대학교 학생들의 모임 활동을 분석하는 전문가입니다.
             새로운 활동 기록을 바탕으로 모임의 특징을 업데이트해주세요.
-            모임의 특징은 문장이 아닌 단어로 구성되어야 합니다.
+            모임의 특징은 문장이 아닌 한 단어로 구성되어야 합니다.
             
             기존 모임 특징: %s
             새로운 활동 기록:
