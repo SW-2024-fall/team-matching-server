@@ -11,12 +11,15 @@ import org.springframework.data.domain.Pageable;
 import swe.second.team_matching_server.domain.history.model.entity.AttendanceHistory;
 
 public interface AttendanceHistoryRepository extends JpaRepository<AttendanceHistory, Long> {
-    @Query("SELECT ah FROM AttendanceHistory ah WHERE ah.meeting.id = :meetingId")
+    @Query("SELECT ah FROM AttendanceHistory ah WHERE ah.meeting.id = :meetingId AND ah.deletedAt IS NULL")
     Page<AttendanceHistory> findAllByMeetingId(@Param("meetingId") Long meetingId, Pageable pageable);
 
-    List<AttendanceHistory> findAllByHistoryId(Long historyId);
+    @Query("SELECT ah FROM AttendanceHistory ah WHERE ah.history.id = :historyId AND ah.deletedAt IS NULL")
+    List<AttendanceHistory> findAllByHistoryId(@Param("historyId") Long historyId);
 
-    int countAllByUserId(String userId);
+    @Query("SELECT COUNT(ah) FROM AttendanceHistory ah WHERE ah.history.user.id = :userId AND ah.deletedAt IS NULL")
+    int countAllByUserId(@Param("userId") String userId);
 
+    @Query("SELECT ah FROM AttendanceHistory ah WHERE ah.history.user.id = :userId AND ah.deletedAt IS NULL")
     Page<AttendanceHistory> findAllByUserId(@Param("userId") String userId, Pageable pageable);
 }
