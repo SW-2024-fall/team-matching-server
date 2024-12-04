@@ -1,6 +1,10 @@
 package swe.second.team_matching_server.domain.user.model.mapper;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import org.springframework.stereotype.Component;
+
 import swe.second.team_matching_server.domain.auth.model.dto.SignupRequest;
 import swe.second.team_matching_server.domain.file.model.entity.File;
 import swe.second.team_matching_server.domain.user.model.dto.UserElement;
@@ -48,10 +52,14 @@ public class UserMapper {
                 .username(signupRequest.getUsername())
                 .email(signupRequest.getEmail())
                 .password(signupRequest.getPassword())
+                .attendanceScore((byte) 80)
                 .major(signupRequest.getMajor())
                 .studentId(signupRequest.getStudentId())
                 .phoneNumber(signupRequest.getPhoneNumber())
-                .preferredCategories(signupRequest.getPreferredCategories())
+                .preferredCategories(signupRequest.getPreferredCategories() != null
+                        ? signupRequest.getPreferredCategories()
+                        : new HashSet<>())
+                .features(new ArrayList<>())
                 .profileImage(profileImage).build();
     }
 }
