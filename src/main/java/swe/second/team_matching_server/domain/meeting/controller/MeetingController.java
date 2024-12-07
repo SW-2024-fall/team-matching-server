@@ -24,6 +24,9 @@ import swe.second.team_matching_server.domain.file.model.exception.FileMaxCountE
 import swe.second.team_matching_server.domain.meeting.model.dto.MeetingUpdateDto;
 import java.util.List;
 import java.util.ArrayList;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Tag(name = "Meeting", description = "모임 API")
 @RestController
@@ -60,9 +63,15 @@ public class MeetingController {
 
   @GetMapping("/user")
   @Operation(summary = "유저가 참여한 모임 조회", description = "유저가 참여한 모임을 조회합니다.")
-  public ApiResponse<List<MeetingElement>> findAllByUserId(@AuthenticationPrincipal UserDetails userDetails) {
+  public ApiResponse<List<MeetingElement>> findAllByUserId(
+      @AuthenticationPrincipal UserDetails userDetails) {
     String userId = userDetails.getUsername();
-    
+
+    return ApiResponse.success(meetingFacadeService.findAllByUserId(userId));
+  }
+  
+  @GetMapping("/user/{userId}")
+  public ApiResponse<List<MeetingElement>> findAllByUserId(@PathVariable String userId) {
     return ApiResponse.success(meetingFacadeService.findAllByUserId(userId));
   }
 
