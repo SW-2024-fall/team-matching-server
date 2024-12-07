@@ -17,9 +17,9 @@ public interface AttendanceHistoryRepository extends JpaRepository<AttendanceHis
     @Query("SELECT ah FROM AttendanceHistory ah WHERE ah.history.id = :historyId AND ah.deletedAt IS NULL")
     List<AttendanceHistory> findAllByHistoryId(@Param("historyId") Long historyId);
 
-    @Query("SELECT COUNT(ah) FROM AttendanceHistory ah WHERE ah.history.user.id = :userId AND ah.deletedAt IS NULL")
+    @Query("SELECT COUNT(ah) FROM AttendanceHistory ah WHERE ah.user.id = :userId AND ah.deletedAt IS NULL")
     int countAllByUserId(@Param("userId") String userId);
 
-    @Query("SELECT ah FROM AttendanceHistory ah WHERE ah.history.user.id = :userId AND ah.deletedAt IS NULL")
+    @Query("SELECT ah FROM AttendanceHistory ah WHERE ah.user.id = :userId AND ah.deletedAt IS NULL")
     Page<AttendanceHistory> findAllByUserId(@Param("userId") String userId, Pageable pageable);
 }
