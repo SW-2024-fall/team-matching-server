@@ -29,7 +29,9 @@ public class UserMapper {
                 .profileUrl(user.getProfileImage().getUrl())
                 .major(user.getMajor().getKoreanName())
                 .studentId(user.getStudentId())
-                .features(user.getFeatures()).build();
+                .features(user.getFeatures())
+                .attendanceScore(user.getAttendanceScore())
+                .build();
     }
 
     public static UserSelfResponse toUserSelfResponse(User user) {
